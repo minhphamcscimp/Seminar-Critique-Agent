@@ -34,6 +34,16 @@ def _coverage(expected: list[str], answer_tokens: list[str]) -> float:
     return hits / len(expected)
 
 
+# A run "passes" when it mentions at least half of the task's key points.
+# The same threshold is applied to the LLM judge's key-point coverage (eval/judge.py).
+PASS_THRESHOLD = 0.5
+
+
+def verdict(coverage: float) -> str:
+    """'pass' or 'fail' for a key-point coverage value in [0, 1]."""
+    return "pass" if coverage >= PASS_THRESHOLD else "fail"
+
+
 def score(task: Task, result: Result) -> dict[str, float]:
     """Return phrase recall and rubric-axis phrase coverage in the answer."""
     answer_tokens = _tokens(result.answer)

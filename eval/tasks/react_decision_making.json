@@ -1,0 +1,21 @@
+{
+  "id": "react-decision-making",
+  "topic": "tool-use-mcp",
+  "paper": "yao2023",
+  "difficulty": "medium",
+  "input": "Yao et al. (2023) evaluate ReAct on ALFWorld and WebShop with one- or two-shot prompts. ReAct beats Act and imitation-learning baselines trained on thousands of trajectories, but its WebShop success rate (40%) remains well below human experts (59.6%). Critique a claim that ReAct reaches human-level decision making with prompting alone.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "human experts",
+    "imitation learning",
+    "success rate",
+    "few-shot prompts"
+  ],
+  "source": "Yao et al. 2023, Section 4 Decision Making Tasks, Tables 3-4 (chunks yao2023-021 to yao2023-024)"
+}

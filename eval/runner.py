@@ -6,29 +6,49 @@ Runs every task with every config several times, saves each trace under traces/,
 and writes one CSV row per run into eval/results/. Commit the CSV, not the traces,
 so the numbers in the report can be reproduced from the repository. The scorer's
 coverage values are deterministic phrase matches, not semantic correctness scores.
+
+A run that raises an error is kept as a row with the `error` column filled and
+`verdict = error`; it never counts as a success. `--resume` re-runs those rows.
 """
 from __future__ import annotations
 
 import argparse
 import csv
 import glob
+import json
 import os
+import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from seminar_critique.configs import CONFIGS, resolve_models
 from seminar_critique.llm import LLMClient, LLMResponse, OutOfQuotaError, get_client
 from seminar_critique.orchestrator import run_pipeline
-from seminar_critique.run import save_trace
-from seminar_critique.schemas import Task
+from seminar_critique.schemas import Config, Result, Task
 
-from .scorer import score
+from .scorer import PASS_THRESHOLD, score, verdict
 
+# Column order of results.csv. `config` is the config id (A/B/C) and `run` the repeat
+# index (0..repeats-1); `run_id` is unique per row and is also written in the trace.
 FIELDS = [
+    "run_id", "task_id", "topic", "difficulty", "config", "run", "model", "timestamp",
+    "key_point_recall", "rubric_axis_coverage", "score", "verdict",
+    "prompt_tokens", "completion_tokens", "tokens", "cost_usd", "latency_s",
+    "reflection_iters", "reflection_changed", "tool_found", "error", "retries", "trace_path",
+]
+# Columns of the D2 file (results.csv before D3). Resume refuses to mix the two.
+LEGACY_FIELDS = [
     "task_id", "config", "run", "key_point_recall", "rubric_axis_coverage",
     "prompt_tokens", "completion_tokens", "cost_usd", "latency_s",
 ]
+RETRY_MARKER = "[llm] call failed"  # printed by seminar_critique.llm.client on each retry
+
+
+def make_run_id(task_id: str, config: str, run: int) -> str:
+    """Stable id for one (task, config, repeat); the same on resume and in the trace."""
+    return f"{task_id}-{config}-r{run}"
 
 
 class _PacedClient:
@@ -59,6 +79,155 @@ class _PacedClient:
         )
 
 
+class _RetryCounter:
+    """Pass stdout through and count the retry lines the LLM client prints.
+
+    The Gemini client retries inside a backoff decorator and only reports it with
+    a print, so this is the one place the runner can see retries without changing
+    the client.
+    """
+
+    def __init__(self, stream: Any) -> None:
+        self._stream = stream
+        self.count = 0
+
+    def write(self, text: str) -> int:
+        self.count += text.count(RETRY_MARKER)
+        return self._stream.write(text)
+
+    def flush(self) -> None:
+        self._stream.flush()
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._stream, name)
+
+
+def _norm(text: str) -> str:
+    return " ".join(text.split()).casefold()
+
+
+def reflection_stats(result: Result) -> tuple[int, int]:
+    """(number of reflection calls, 1 if reflection changed the final answer else 0)."""
+    iters = sum(1 for step in result.trace if step.agent == "reflection")
+    drafts = [step.output for step in result.trace if step.agent == "synthesizer"]
+    changed = int(bool(drafts) and iters > 0 and _norm(drafts[-1]) != _norm(result.answer))
+    return iters, changed
+
+
+def tool_found(result: Result) -> int:
+    """Benchmark records the tool returned with found=true (R1); counted once per run."""
+    calls = [c for step in result.trace if step.agent == "critic" for c in step.tool_calls]
+    return sum(1 for c in calls if isinstance(c.get("result"), dict) and c["result"].get("found"))
+
+
+def model_label(cfg: Config) -> str:
+    """Models the config really calls (A only calls the baseline agent)."""
+    agents = ["baseline"] if not cfg.use_pipeline else [
+        "summarizer", "critic", "synthesizer", *(["reflection"] if cfg.max_reflection_iters else [])
+    ]
+    return "+".join(sorted({cfg.models[a] for a in agents if a in cfg.models}))
+
+
+def save_trace(result: Result | None, out_dir: str, task: Task, config: str, run: int,
+               meta: dict[str, Any]) -> str:
+    """Write traces/<config>/<task_id>_run<run>.json with run_id and run metadata."""
+    path = Path(out_dir) / config
+    path.mkdir(parents=True, exist_ok=True)
+    file = path / f"{task.id}_run{run}.json"
+    data: dict[str, Any] = dict(meta)
+    if result is not None:
+        data.update(result.to_dict())
+    else:
+        data.update({"task_id": task.id, "config_name": config, "answer": "", "trace": []})
+    file.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    return file.as_posix()
+
+
+def run_one(task: Task, name: str, run: int, llm: LLMClient, llm_name: str,
+            traces_dir: str) -> dict[str, Any]:
+    """Run one task/config/repeat and return its CSV row. Errors become a row too."""
+    config = resolve_models(CONFIGS[name], llm_name)
+    run_id = make_run_id(task.id, name, run)
+    timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    counter = _RetryCounter(sys.stdout)
+    started = time.perf_counter()
+    result: Result | None = None
+    error = ""
+    old_stdout, sys.stdout = sys.stdout, counter
+    try:
+        result = run_pipeline(task, config, llm)
+    except OutOfQuotaError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - every failure must be recorded, not hidden
+        error = f"{type(exc).__name__}: {exc}".replace("\n", " ")[:300]
+    finally:
+        sys.stdout = old_stdout
+
+    row: dict[str, Any] = {
+        "run_id": run_id, "task_id": task.id, "topic": task.topic,
+        "difficulty": task.difficulty, "config": name, "run": run,
+        "model": model_label(config), "timestamp": timestamp,
+        "error": error, "retries": counter.count,
+    }
+    if result is None:
+        row.update({
+            "key_point_recall": "", "rubric_axis_coverage": "", "score": "",
+            "verdict": "error", "prompt_tokens": 0, "completion_tokens": 0, "tokens": 0,
+            "cost_usd": 0.0, "latency_s": round(time.perf_counter() - started, 3),
+            "reflection_iters": "", "reflection_changed": "", "tool_found": "",
+        })
+    else:
+        s = score(task, result)
+        iters, changed = reflection_stats(result)
+        usage = result.usage
+        row.update({
+            "key_point_recall": s["key_point_recall"],
+            "rubric_axis_coverage": s["rubric_axis_coverage"],
+            "score": s["key_point_recall"],
+            "verdict": verdict(s["key_point_recall"]),
+            "prompt_tokens": usage.prompt_tokens,
+            "completion_tokens": usage.completion_tokens,
+            "tokens": usage.prompt_tokens + usage.completion_tokens,
+            "cost_usd": usage.cost_usd,
+            "latency_s": round(usage.latency_s, 3),
+            "reflection_iters": iters if config.max_reflection_iters else "",
+            "reflection_changed": changed if config.max_reflection_iters else "",
+            "tool_found": tool_found(result) if config.use_tools else "",
+        })
+    meta = {k: row[k] for k in ("run_id", "model", "timestamp", "error", "retries")}
+    row["trace_path"] = save_trace(result, traces_dir, task, name, run, meta)
+    return row
+
+
+def _load_resume_rows(path: Path, tasks: list[Task], configs: list[str], repeats: int,
+                      p: argparse.ArgumentParser) -> list[dict[str, str]]:
+    """Rows to keep from an earlier run: valid, matching, and without an error."""
+    with path.open(newline="", encoding="utf-8") as existing_file:
+        reader = csv.DictReader(existing_file)
+        if reader.fieldnames != FIELDS:
+            p.error(f"cannot resume: {path} does not have the expected CSV columns")
+        rows = list(reader)
+    task_ids = {task.id for task in tasks}
+    seen: set[tuple[str, str, int]] = set()
+    kept: list[dict[str, str]] = []
+    for line_number, row in enumerate(rows, start=2):
+        try:
+            key = (row["task_id"], row["config"], int(row["run"]))
+        except (KeyError, TypeError, ValueError) as exc:
+            p.error(f"cannot resume: invalid row {line_number} in {path}: {exc}")
+        if key[0] not in task_ids or key[1] not in configs or not 0 <= key[2] < repeats:
+            p.error(
+                f"cannot resume: row {line_number} does not match the requested tasks, "
+                "configs, and repeats"
+            )
+        if key in seen:
+            p.error(f"cannot resume: duplicate task/config/run row at line {line_number}")
+        seen.add(key)
+        if not row["error"]:
+            kept.append(row)
+    return kept
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--tasks", default="eval/tasks")
@@ -70,7 +239,7 @@ def main() -> None:
     p.add_argument(
         "--resume",
         action="store_true",
-        help="continue from completed task/config/repeat rows already in --out",
+        help="keep completed rows already in --out and run the rest (error rows are re-run)",
     )
     p.add_argument(
         "--gemini-call-interval",
@@ -90,41 +259,27 @@ def main() -> None:
     tasks = [Task.from_json(path) for path in task_files]
     output_path = Path(args.out)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    completed_runs: set[tuple[str, str, int]] = set()
+
+    kept_rows: list[dict[str, str]] = []
     if args.resume and output_path.exists() and output_path.stat().st_size:
-        with output_path.open(newline="", encoding="utf-8") as existing_file:
-            reader = csv.DictReader(existing_file)
-            if reader.fieldnames != FIELDS:
-                p.error(f"cannot resume: {output_path} does not have the expected CSV columns")
-            task_ids = {task.id for task in tasks}
-            for line_number, row in enumerate(reader, start=2):
-                try:
-                    task_id = row["task_id"]
-                    config = row["config"]
-                    run = int(row["run"])
-                except (KeyError, TypeError, ValueError) as exc:
-                    p.error(f"cannot resume: invalid row {line_number} in {output_path}: {exc}")
-                if task_id not in task_ids or config not in args.configs or not 0 <= run < args.repeats:
-                    p.error(
-                        f"cannot resume: row {line_number} does not match the requested tasks, "
-                        "configs, and repeats"
-                    )
-                key = (task_id, config, run)
-                if key in completed_runs:
-                    p.error(f"cannot resume: duplicate task/config/run row at line {line_number}")
-                completed_runs.add(key)
-    llm = get_client(args.llm)
+        kept_rows = _load_resume_rows(output_path, tasks, args.configs, args.repeats, p)
+    completed_runs = {(r["task_id"], r["config"], int(r["run"])) for r in kept_rows}
+
+    llm: LLMClient = get_client(args.llm)
     if args.llm == "gemini":
         llm = _PacedClient(llm, args.gemini_call_interval)
 
-    file_mode = "a" if args.resume and output_path.exists() and output_path.stat().st_size else "w"
-    with output_path.open(file_mode, newline="", encoding="utf-8") as f:
+    total = len(tasks) * len(args.configs) * args.repeats
+    # Rewrite the file with the kept rows first: error rows from the earlier run are
+    # dropped here and run again below, so each task/config/run appears once.
+    with output_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=FIELDS)
-        if file_mode == "w":
-            writer.writeheader()
-            f.flush()
+        writer.writeheader()
+        writer.writerows(kept_rows)
+        f.flush()
         completed_tasks = 0
         completed_runs_count = len(completed_runs)
+        error_count = 0
         interrupted = False
         current_run: tuple[str, str, int] | None = None
         try:
@@ -136,34 +291,23 @@ def main() -> None:
                             continue
                         current_run = key
                         print(
-                            f"starting run {completed_runs_count + 1}/"
-                            f"{len(tasks) * len(args.configs) * args.repeats}: "
+                            f"starting run {completed_runs_count + 1}/{total}: "
                             f"{task.id} config {name} repeat {run + 1}/{args.repeats}",
                             flush=True,
                         )
                         call_started = time.perf_counter()
-                        config = resolve_models(CONFIGS[name], args.llm)
-                        result = run_pipeline(task, config, llm)
-                        s = score(task, result)
-                        save_trace(result, args.traces, run)
-                        writer.writerow({
-                            "task_id": task.id, "config": name, "run": run,
-                            "key_point_recall": s["key_point_recall"],
-                            "rubric_axis_coverage": s["rubric_axis_coverage"],
-                            "prompt_tokens": result.usage.prompt_tokens,
-                            "completion_tokens": result.usage.completion_tokens,
-                            "cost_usd": result.usage.cost_usd,
-                            "latency_s": round(result.usage.latency_s, 3),
-                        })
+                        row = run_one(task, name, run, llm, args.llm, args.traces)
+                        writer.writerow(row)
                         f.flush()
                         completed_runs.add(key)
                         completed_runs_count += 1
                         current_run = None
+                        status = f"ERROR {row['error']}" if row["error"] else "ok"
+                        error_count += bool(row["error"])
                         print(
-                            f"completed {completed_runs_count}/"
-                            f"{len(tasks) * len(args.configs) * args.repeats} runs: "
+                            f"completed {completed_runs_count}/{total} runs: "
                             f"{task.id} config {name} repeat {run + 1}/{args.repeats} "
-                            f"({time.perf_counter() - call_started:.1f}s)",
+                            f"({time.perf_counter() - call_started:.1f}s, {status})",
                             flush=True,
                         )
                 if all(
@@ -193,9 +337,11 @@ def main() -> None:
                 f"{active_run} Rerun with --resume to continue.",
                 flush=True,
             )
-    run_count = completed_runs_count
     status = "stopped" if interrupted else "wrote"
-    print(f"{status} {output_path} with {run_count} completed run(s)")
+    print(
+        f"{status} {output_path} with {completed_runs_count} completed run(s), "
+        f"{error_count} error(s) in this session (verdict pass = score >= {PASS_THRESHOLD})"
+    )
 
 
 if __name__ == "__main__":

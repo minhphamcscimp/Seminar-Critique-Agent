@@ -1,7 +1,9 @@
 {
   "id": "example-01",
   "topic": "self-improvement-reflection",
-  "input": "(example) Huang et al. 2024 claim that LLMs cannot self-correct reasoning without external feedback. Critique this claim.",
+  "paper": "huang2024",
+  "difficulty": "easy",
+  "input": "Huang et al. (2024) observe that earlier self-correction gains (for example Reflexion) came from using oracle labels about answer correctness to decide when to stop correcting, and that the gains vanish without them; in practice such external feedback is often unavailable. Critique a claim that results obtained with oracle labels show how well LLMs self-correct in real use.",
   "rubric_axes": [
     "assumptions",
     "baseline fairness",
@@ -10,8 +12,9 @@
     "reproducibility"
   ],
   "key_points": [
-    "intrinsic self-correction",
+    "oracle labels",
     "external feedback",
-    "baseline"
-  ]
+    "answer correctness"
+  ],
+  "source": "Huang et al. 2024, Section 1 Introduction (chunks huang2024-002, huang2024-004)"
 }

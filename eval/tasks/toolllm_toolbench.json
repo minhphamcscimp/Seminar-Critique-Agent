@@ -1,6 +1,8 @@
 {
   "id": "toolllm-toolbench",
   "topic": "tool-use-mcp",
+  "paper": "qin2024",
+  "difficulty": "easy",
   "input": "Qin et al. (2024) introduce ToolLLM, a framework combining data construction, model training, and evaluation for tool use, including the automatically constructed ToolBench dataset. Critique a claim that success on this benchmark alone proves broad reliability for all real-world APIs.",
   "rubric_axes": [
     "assumptions",
@@ -14,5 +16,6 @@
     "data construction",
     "model training",
     "real-world APIs"
-  ]
+  ],
+  "source": "Qin et al. 2024, Abstract (chunk qin2024-000)"
 }

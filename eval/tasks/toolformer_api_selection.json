@@ -1,6 +1,8 @@
 {
   "id": "toolformer-api-selection",
   "topic": "tool-use-mcp",
+  "paper": "schick2023",
+  "difficulty": "easy",
   "input": "Schick et al. (2023) present Toolformer, training language models to decide which APIs to call, when to call them, what arguments to pass, and how to use returned results. The paper describes a self-supervised approach using a small number of demonstrations per API. Critique a claim that learning to select API calls alone guarantees correct arguments and safe execution for arbitrary tools.",
   "rubric_axes": [
     "assumptions",
@@ -14,5 +16,6 @@
     "arguments",
     "returned results",
     "safe execution"
-  ]
+  ],
+  "source": "Schick et al. 2023, Abstract (chunk schick2023-000)"
 }

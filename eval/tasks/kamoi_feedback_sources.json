@@ -1,0 +1,21 @@
+{
+  "id": "kamoi-feedback-sources",
+  "topic": "self-improvement-reflection",
+  "paper": "kamoi2024",
+  "difficulty": "medium",
+  "input": "Kamoi et al. (2024) survey self-correction and report that no prior work shows successful self-correction with feedback from prompted LLMs except in tasks exceptionally suited to it, while self-correction works well with reliable external feedback and with large-scale fine-tuning. They propose a checklist for experiment design. Critique a claim that this survey proves self-correction never works.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "prompted LLMs",
+    "reliable external feedback",
+    "fine-tuning",
+    "checklist"
+  ],
+  "source": "Kamoi et al. 2024, Abstract and Conclusion (chunks kamoi2024-000, kamoi2024-030)"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "toolformer-self-supervision",
+  "topic": "tool-use-mcp",
+  "paper": "schick2023",
+  "difficulty": "hard",
+  "input": "Schick et al. (2023) train Toolformer in a self-supervised way from a handful of demonstrations per API: the model samples candidate API calls and keeps those whose results help it predict future tokens. Critique a claim that, because the method is self-supervised, the selected calls are unbiased and are the calls that help most on downstream tasks.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "handful of demonstrations",
+    "self-supervised",
+    "future tokens",
+    "downstream tasks"
+  ],
+  "source": "Schick et al. 2023, Abstract (chunk schick2023-000)"
+}

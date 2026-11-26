@@ -1,0 +1,21 @@
+{
+  "id": "toolllm-tooleval-judge",
+  "topic": "tool-use-mcp",
+  "paper": "qin2024",
+  "difficulty": "hard",
+  "input": "Qin et al. (2024) evaluate ToolLLaMA with ToolEval, an automatic evaluator based on ChatGPT, reporting 87.1% agreement with human annotators on pass rate and 80.3% on win rate. ChatGPT is also the teacher model that generated the ToolBench training data, and win rate is measured against ChatGPT-ReACT. Critique a claim that ToolEval scores are as reliable as human evaluation for comparing all models.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "ToolEval",
+    "human annotators",
+    "teacher model",
+    "ChatGPT"
+  ],
+  "source": "Qin et al. 2024, Section 3 Experiments, preliminary experiments and Table 4 (chunks qin2024-017, qin2024-018, qin2024-022)"
+}

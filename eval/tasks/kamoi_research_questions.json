@@ -1,0 +1,21 @@
+{
+  "id": "kamoi-research-questions",
+  "topic": "self-improvement-reflection",
+  "paper": "kamoi2024",
+  "difficulty": "hard",
+  "input": "Kamoi et al. (2024) argue that self-correction papers rarely define their research question: improving on the model's own initial response, improving on the best-possible initial response that uses the same external information, or beating other baseline methods. They find impractical frameworks and unfair evaluations that over-evaluate self-correction. Critique a claim that a gain over the model's own first answer proves that self-correction beats other methods.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "research questions",
+    "best-possible initial responses",
+    "unfair evaluations",
+    "baseline methods"
+  ],
+  "source": "Kamoi et al. 2024, Abstract and Section 3.1 RQs in Self-Correction Research (chunks kamoi2024-000, kamoi2024-012)"
+}

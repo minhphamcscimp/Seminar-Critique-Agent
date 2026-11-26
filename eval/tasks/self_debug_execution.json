@@ -1,0 +1,21 @@
+{
+  "id": "self-debug-execution",
+  "topic": "self-improvement-reflection",
+  "paper": "chen2024",
+  "difficulty": "medium",
+  "input": "Chen et al. (2024) propose Self-Debugging, where a model explains its own code and uses execution results to fix it (rubber duck debugging). When unit test execution is removed, the gains shrink and become inconsistent across models and benchmarks (for example MBPP and TransCoder). Critique a claim that Self-Debugging shows the model fixes its code purely by introspection.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "unit tests",
+    "execution results",
+    "code explanation",
+    "without execution"
+  ],
+  "source": "Chen et al. 2024, Abstract and Section 5.2.2 Importance of Code Execution (chunks chen2024-000, chen2024-028)"
+}

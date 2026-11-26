@@ -1,0 +1,7 @@
+run_id,task_id,config,run,judge_model,judge_score,judge_verdict,points_covered,points_total,point_labels,prompt_tokens,completion_tokens,cost_usd,error
+reflexion-memory-A-r0,reflexion-memory,A,0,gemini-3.1-flash-lite,1.0,pass,4,4,1111,1093,129,0.0001609,
+reflexion-memory-B-r0,reflexion-memory,B,0,gemini-3.1-flash-lite,1.0,pass,4,4,1111,700,120,0.000118,
+self-refine-feedback-A-r0,self-refine-feedback,A,0,gemini-3.1-flash-lite,0.75,pass,3,4,1101,1187,119,0.0001663,
+self-refine-feedback-B-r0,self-refine-feedback,B,0,gemini-3.1-flash-lite,1.0,pass,4,4,1111,734,105,0.0001154,
+toolformer-api-selection-A-r0,toolformer-api-selection,A,0,gemini-3.1-flash-lite,1.0,pass,4,4,1111,1187,147,0.0001775,
+toolformer-api-selection-B-r0,toolformer-api-selection,B,0,gemini-3.1-flash-lite,1.0,pass,4,4,1111,690,111,0.0001134,

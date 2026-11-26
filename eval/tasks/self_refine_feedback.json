@@ -1,6 +1,8 @@
 {
   "id": "self-refine-feedback",
   "topic": "self-improvement-reflection",
+  "paper": "madaan2023",
+  "difficulty": "easy",
   "input": "Madaan et al. (2023) describe SELF-REFINE as an iterative process in which one LLM generates an output, provides feedback on it, and revises it. The method does not require supervised training data or additional model training. Critique a claim that this setup proves all self-feedback improves factual reasoning in deployed systems.",
   "rubric_axes": [
     "assumptions",
@@ -14,5 +16,6 @@
     "same LLM",
     "supervised training data",
     "factual reasoning"
-  ]
+  ],
+  "source": "Madaan et al. 2023, Abstract (chunk madaan2023-000)"
 }
