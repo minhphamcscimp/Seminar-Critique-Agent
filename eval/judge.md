@@ -86,9 +86,10 @@ verdicts, for Tam vs Tin, Tam vs judge, Tin vs judge.
 ## 5. Commands (official run on `d3-freeze`)
 
 ```
-python -m eval.runner --llm gemini --repeats 3      # results.csv + traces/
-python -m eval.judge  --llm gemini                  # judge.csv
-python -m eval.summarize                            # summary.md (adds the judge table)
+git checkout d3-freeze
+python -m eval.official     # runner -> judge -> summarize -> error_analysis, writes run_info.md
 ```
 
-Each command continues after a stop with `--resume`.
+Running the same command again continues after a stop. The single steps are
+`eval.runner --llm gemini --repeats 3`, `eval.judge --llm gemini`, `eval.summarize`,
+`eval.error_analysis`.

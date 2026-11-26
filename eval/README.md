@@ -30,14 +30,19 @@ paper under critique (`python -m seminar_critique.retrieval.check_tasks`, 26/11)
 | What | Command | Writes |
 |---|---|---|
 | Pipeline check, offline | `python -m eval.runner --repeats 1 --out eval/results/results_fake.csv` | that file, `traces/` |
-| Official run (on `d3-freeze`) | `python -m eval.runner --llm gemini --repeats 3` | `results/results.csv`, `traces/` |
+| **Official run, all steps** (on `d3-freeze`) | `python -m eval.official` | everything below + `results/run_info.md` |
+| Official run, runner only | `python -m eval.runner --llm gemini --repeats 3` | `results/results.csv`, `traces/` |
 | LLM judge | `python -m eval.judge --llm gemini` | `results/judge.csv` |
 | Tables | `python -m eval.summarize` | `results/summary.md` |
 | Human rating sample | `python -m eval.agreement sample` | `eval/human/` |
 | Judge reliability | `python -m eval.agreement score` | `results/agreement.md` |
 | Where key points get lost | `python -m eval.keypoint_trace --worse-than A --config B` | stdout or `--out` |
+| Error analysis (Section 5.7) | `python -m eval.error_analysis` | `results/error_analysis.md` |
+| Task list for the team | `python -m eval.task_table` | `eval/TASKS.md` |
 
-`runner`, `judge` continue after a stop with `--resume` (pass the same options).
+`runner`, `judge` continue after a stop with `--resume` (pass the same options);
+`eval.official` checks that HEAD is tag `d3-freeze`, the tree is clean and the key is set,
+then resumes by itself when run again.
 Without `--out`, the runner overwrites `results/results.csv`: always pass `--out` for
 offline runs. Gemini calls are paced at about 10 per minute (`--gemini-call-interval`);
 on quota exhaustion the runner stops, keeps completed rows and exits with an error.
@@ -60,6 +65,7 @@ about **2.2 h** and about 0.17 USD at paid-tier prices. The judge adds 225 calls
 | `score`, `verdict` | `score` = key-point recall; `pass` if >= 0.5, `fail`, or `error` |
 | `prompt_tokens`, `completion_tokens`, `tokens`, `cost_usd`, `latency_s` | whole run |
 | `reflection_iters`, `reflection_changed` | config C only (R4): reflection calls, and 1 if the final answer differs from the Synthesizer draft |
+| `tool_found` | configs with the tool (B, C): benchmark records returned with `found: true` (R1) |
 | `error`, `retries` | exception text if the run failed; LLM retries counted from the client's retry log |
 | `trace_path` | trace file of this run |
 
