@@ -6,12 +6,12 @@
   },
   "chunks": 299,
   "chunks_per_topic": {
-    "self-improvement-reflection": 178,
-    "tool-use-mcp": 121
+    "self-improvement-reflection": 177,
+    "tool-use-mcp": 122
   },
   "chunk_size_words": 250,
   "chunk_overlap_words": 40,
-  "avg_words_per_chunk": 217.1,
+  "avg_words_per_chunk": 216.7,
   "indexing": "BM25 (k1=1.5, b=0.75), lexical, no embedding model",
   "graph": {
     "nodes": 309,
@@ -19,12 +19,12 @@
       "paper": 10,
       "chunk": 299
     },
-    "edges": 772,
+    "edges": 762,
     "edges_by_kind": {
       "part_of": 299,
       "cites": 24,
       "adjacent": 289,
-      "similar": 160
+      "similar": 150
     }
   },
   "graph_edge_rules": {

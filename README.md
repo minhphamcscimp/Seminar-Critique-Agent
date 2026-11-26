@@ -55,12 +55,36 @@ third_party/MAD/    code and data from the MAD paper (not ours, see below)
 
 ## Quick start
 
+Requirements: Python 3.11 or newer (checked on 3.13.18 Linux and 3.14.5 Windows), internet only
+for the live Gemini run. Install takes about 1-2 minutes (`pymupdf` pulls in `onnxruntime` and `numpy`).
+
 ```
-pip install -r requirements.txt
-pytest
-python -m seminar_critique.run --task eval/tasks/example_task.json --config C
-python -m eval.runner --repeats 3
+python -m venv .venv
+source .venv/bin/activate            # Windows PowerShell: .\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+cp .env.example .env                 # Windows: Copy-Item .env.example .env, then put your key in .env
+python -m pytest
 ```
+
+Use `python -m pip` and `python -m pytest` (not `pip` / `pytest`): some Windows machines with an
+Application Control policy block the `.exe` launchers inside `.venv`.
+
+Three ways to run, from cheapest to most expensive:
+
+| What | Command | API key | Cost | Writes |
+|---|---|---|---|---|
+| Demo, offline (FakeLLM) | `python -m seminar_critique.run --task eval/tasks/example_task.json --config C` | no | 0 | `traces/C/` |
+| Re-read the saved results (no run) | `python -m eval.summarize` | no | 0 | `eval/results/summary.md` (same table as committed) |
+| Pipeline check, offline (FakeLLM) | `python -m eval.runner --repeats 1 --out eval/results/results_fake.csv` | no | 0 | the file given in `--out` |
+| Demo, live | `python -m seminar_critique.run --task eval/tasks/example_task.json --config C --llm gemini` | yes | < 0.01 USD | `traces/C/` |
+| Full evaluation, live | `python -m eval.runner --llm gemini --repeats 3` then `python -m eval.summarize` | yes | see report Section 5 | `eval/results/results.csv`, `summary.md` |
+
+**Warning:** `python -m eval.runner` without `--out` writes `eval/results/results.csv`, the file the
+report numbers come from. An offline run (the default `--llm fake`) would overwrite the real results
+with FakeLLM numbers, so always pass `--out` for offline runs. If it happens: `git checkout -- eval/results/`.
+
+Run `summarize` as a module (`python -m eval.summarize`); `python eval/summarize.py` fails with
+`ModuleNotFoundError: seminar_critique`.
 
 Team workflow: see [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -74,5 +98,23 @@ Results and data inside `third_party/` are **not** results of this project.
 
 ## Reproducibility
 
-Numbers in the report come from `eval/results/*.csv`, produced by `python -m eval.runner`.
-The report states the repository URL and the exact commit hash.
+Numbers in the report come from `eval/results/results.csv`, produced by
+`python -m eval.runner --llm gemini --repeats 3` and summarised by `python -m eval.summarize`.
+The report states the repository URL and the exact commit hash (tag `final`).
+
+- **Live run vs saved results.** Re-running live calls Gemini again: answers, cost and latency
+  change from run to run. The committed CSV and traces are the record of the run in the report;
+  re-reading them (`python -m eval.summarize`) reproduces the tables exactly, but it is not
+  evidence that the system runs. The offline FakeLLM runs show that the pipeline runs end to end.
+- **Rate limit.** The runner waits at least 6 s between Gemini calls (`--gemini-call-interval`).
+  If a run stops, continue it with `--resume`.
+- **Retrieval data.** `data/chunks.jsonl` is committed, so retrieval needs no download.
+  To rebuild it from the arXiv PDFs (optional, needs internet):
+  `python -m seminar_critique.retrieval.ingest --out data/chunks_new.jsonl`, then
+  `python -m seminar_critique.retrieval.compare_chunks data/chunks.jsonl data/chunks_new.jsonl`.
+  arXiv may serve a newer version of a paper, so a rebuild can differ from the committed file.
+- **Retrieval numbers.** `python -m seminar_critique.retrieval.stats` writes `retrieval/stats.json`;
+  `python -m seminar_critique.retrieval.check_tasks --out seminar_critique/retrieval/task_check.json`
+  checks, for every task in `eval/tasks/`, that the top-5 contains the paper under critique.
+- **Manual steps.** Getting a Gemini API key and putting it in `.env` cannot be automated.
+- **Checked on:** see `docs/repro_check.md` (date, OS, Python version, commands, problems found).

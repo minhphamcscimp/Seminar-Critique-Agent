@@ -26,3 +26,6 @@ traces/*
 
 # Raw paper PDFs (download with ingest.py, do not commit)
 data/raw/
+
+# Offline FakeLLM runs (see README Quick start)
+eval/results/results_fake.csv
