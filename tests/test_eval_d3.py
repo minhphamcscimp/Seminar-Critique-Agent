@@ -225,3 +225,66 @@ def test_keypoint_trace_finds_step_that_lost_a_point():
     table = "\n".join(keypoint_trace.explain(trace, task))
     assert "| external feedback | - | yes | yes | - | - | synthesizer |" in table
     assert "| oracle labels | - | yes | - | - | - | critic |" in table
+
+
+# ---- R1 tool column, ablation-safe summary, error analysis, task table, official run ----
+from eval import error_analysis, official, task_table  # noqa: E402
+
+
+def test_runner_records_tool_found_for_tool_configs_only(tmp_path, monkeypatch):
+    rows = {r["config"]: r for r in _run_runner(tmp_path, monkeypatch)}
+    assert rows["A"]["tool_found"] == ""
+    assert rows["B"]["tool_found"] == "0"  # "t1" maps to no benchmark record
+
+
+def test_tool_found_counts_found_records_in_critic_step():
+    calls = [{"result": {"found": True}}, {"result": {"found": False}}, {"result": {"found": True}}]
+    result = Result("t", "B", "x", [TraceStep("critic", "", "", tool_calls=calls)])
+    assert runner.tool_found(result) == 2
+
+
+def test_summary_with_extra_config_in_configs_does_not_hide_results(monkeypatch):
+    from seminar_critique.configs import CONFIGS
+    from seminar_critique.schemas import Config
+
+    monkeypatch.setitem(CONFIGS, "D", Config(name="D"))  # e.g. a new ablation nobody ran yet
+    rows = {c: [_row("t1", c, 0, 0.5, tool_found="1" if c != "A" else "")] for c in "ABC"}
+    summary = summarize._render(rows, expected_repeats=1)
+    assert "metrics are withheld" not in summary
+    assert "| B | 1/1 (100%) | 1.00 |" in summary  # R1 table
+
+
+def test_error_analysis_categories(tmp_path):
+    task = Task(**TASK)
+    trace = tmp_path / "t.json"
+    trace.write_text(json.dumps({"answer": "nothing here", "trace": [
+        {"agent": "summarizer", "output": "external feedback"},
+        {"agent": "synthesizer", "output": "nothing here"},
+    ]}), encoding="utf-8")
+    rows = [
+        {"run_id": "r1", "task_id": "t1", "config": "B", "error": "", "trace_path": str(trace), "score": "0"},
+        {"run_id": "r2", "task_id": "t1", "config": "B", "error": "Timeout", "trace_path": "", "score": ""},
+    ]
+    misses, errors, missing = error_analysis.classify(rows, {}, {"t1": task})
+    assert {m["key_point"]: m["category"] for m in misses} == {
+        "external feedback": "lost between agents", "oracle labels": "not produced"}
+    assert len(errors) == 1 and missing == 0
+    misses, _, _ = error_analysis.classify(rows, {"r1": {"point_labels": "01"}}, {"t1": task})
+    assert {m["key_point"]: m["category"] for m in misses}["oracle labels"] == "paraphrase"
+    text = error_analysis.render(rows, {}, {"t1": task})
+    assert "Pipeline errors: 1 of 2 runs." in text and "| r2 | error |" in text
+
+
+def test_task_table_lists_every_task():
+    text = task_table.render()
+    for path in Path("eval/tasks").glob("*.json"):
+        assert f"| {json.loads(path.read_text(encoding='utf-8'))['id']} |" in text
+
+
+def test_official_run_refuses_without_tag(monkeypatch):
+    monkeypatch.setattr(official, "git", lambda *a: "" if "--verify" in a else "abc")
+    monkeypatch.setenv("GEMINI_API_KEY", "test")
+    problems = official.preflight("d3-freeze", allow_untagged=False)
+    assert any("tag not found" in p for p in problems)
+    assert official.preflight("d3-freeze", allow_untagged=True) == [
+        "tracked files are modified; the run must match the tagged code"]
