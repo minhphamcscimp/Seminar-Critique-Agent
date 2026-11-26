@@ -1,0 +1,7 @@
+run_id,task_id,topic,difficulty,config,run,model,timestamp,key_point_recall,rubric_axis_coverage,score,verdict,prompt_tokens,completion_tokens,tokens,cost_usd,latency_s,reflection_iters,reflection_changed,error,retries,trace_path
+reflexion-memory-A-r0,reflexion-memory,self-improvement-reflection,easy,A,0,gemini-3.1-flash-lite,2026-11-26T16:30:57+00:00,0.75,0.0,0.75,pass,153,784,937,0.0003289,4.392,,,,0,traces/r5/A/reflexion-memory_run0.json
+reflexion-memory-B-r0,reflexion-memory,self-improvement-reflection,easy,B,0,gemini-3.1-flash-lite,2026-11-26T16:31:02+00:00,0.25,1.0,0.25,fail,3837,1094,4931,0.0008213,30.331,,,,1,traces/r5/B/reflexion-memory_run0.json
+self-refine-feedback-A-r0,self-refine-feedback,self-improvement-reflection,easy,A,0,gemini-3.1-flash-lite,2026-11-26T16:31:32+00:00,0.5,0.2,0.5,pass,153,885,1038,0.0003693,10.782,,,,0,traces/r5/A/self-refine-feedback_run0.json
+self-refine-feedback-B-r0,self-refine-feedback,self-improvement-reflection,easy,B,0,gemini-3.1-flash-lite,2026-11-26T16:31:43+00:00,0.0,1.0,0.0,fail,3801,1114,4915,0.0008257,25.18,,,,0,traces/r5/B/self-refine-feedback_run0.json
+toolformer-api-selection-A-r0,toolformer-api-selection,tool-use-mcp,easy,A,0,gemini-3.1-flash-lite,2026-11-26T16:32:08+00:00,0.5,0.0,0.5,pass,162,865,1027,0.0003622,5.756,,,,0,traces/r5/A/toolformer-api-selection_run0.json
+toolformer-api-selection-B-r0,toolformer-api-selection,tool-use-mcp,easy,B,0,gemini-3.1-flash-lite,2026-11-26T16:32:14+00:00,0.0,1.0,0.0,fail,3518,1001,4519,0.0007522,40.405,,,,0,traces/r5/B/toolformer-api-selection_run0.json
