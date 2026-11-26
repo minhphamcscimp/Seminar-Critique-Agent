@@ -48,6 +48,10 @@ class Task:
     input: str  # the seminar material the agents must critique
     rubric_axes: list[str] = field(default_factory=list)
     key_points: list[str] = field(default_factory=list)  # expected findings
+    # Optional metadata (D3). Not used by the pipeline, only by eval and the report.
+    paper: str = ""  # paper id from data/papers.md that the task critiques
+    difficulty: str = ""  # "easy" | "medium" | "hard"
+    source: str = ""  # where the key points come from (paper + section)
 
     @classmethod
     def from_json(cls, path: str) -> "Task":
