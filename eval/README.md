@@ -42,11 +42,11 @@ Without `--out`, the runner overwrites `results/results.csv`: always pass `--out
 offline runs. Gemini calls are paced at about 10 per minute (`--gemini-call-interval`);
 on quota exhaustion the runner stops, keeps completed rows and exits with an error.
 
-**Budget estimate (to confirm with a 1-task live run):** 25 tasks x 3 repeats x
-(A 1 + B 3 + C up to 5 calls) = up to 675 pipeline calls, plus 225 judge calls. From the
-D2 numbers (about 77 s per task for the 3 configs, 0.0025 USD per task for A+B+C), the
-official run takes about 1.6 h and about 0.2 USD at paid-tier prices, the judge about
-25 min more.
+**Budget (measured 26/11 with 1 live task, `example-01`, A+B+C):** 104 s wall-clock
+including the 6 s pacing, 0.0022 USD for the three configs (A 7 s, B 42 s, C 51 s).
+25 tasks x 3 repeats x (A 1 + B 3 + C up to 5 calls) = up to 675 pipeline calls:
+about **2.2 h** and about 0.17 USD at paid-tier prices. The judge adds 225 calls
+(about 25 min, about 0.03 USD). Start the official run early on 29/11.
 
 ## results.csv columns (D3)
 

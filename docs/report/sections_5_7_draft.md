@@ -94,7 +94,11 @@ human-judge [TBD] / [TBD] (`agreement.md`). [TBD: does the judge see a B/C diffe
 
 `python -m eval.keypoint_trace` shows, per key point, which agent step first lost it.
 *D2:* B scored below A on `self-refine-feedback`, `toolformer-api-selection`
-(0.0 vs 0.5) and `reflexion-memory` (0.25 vs 0.75) [TBD: cause per task, R5].
+(0.0 vs 0.5) and `reflexion-memory` (0.25 vs 0.75). A live re-run (26/11) reproduced these
+phrase scores, but the judge found B covers all key points in all three (A: 1.0, 0.75, 1.0):
+B paraphrases ("when and how to invoke external APIs" for "which APIs to call"), which the
+phrase scorer cannot match (`eval/results/r5_analysis.md`). The phrase score therefore
+understates the pipeline; we report both scores.
 
 ### 5.8 Contamination
 
