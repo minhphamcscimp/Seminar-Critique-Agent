@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import json
+from collections import Counter
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -55,14 +56,26 @@ def test_task_set_has_valid_contracts_and_covers_two_topics():
     task_paths = sorted(Path("eval/tasks").glob("*.json"))
     tasks = [Task.from_json(str(path)) for path in task_paths]
 
-    assert len(tasks) == 9
+    # D3 plan: >= 24 tasks, 2 topics x >= 12, every corpus paper critiqued by >= 2 tasks.
+    assert len(tasks) >= 24
     assert len({task.id for task in tasks}) == len(tasks)
-    assert {task.topic for task in tasks} >= {
-        "self-improvement-reflection",
-        "tool-use-mcp",
-    }
+    assert len({task.input for task in tasks}) == len(tasks)  # no renamed copies
+    by_topic = Counter(task.topic for task in tasks)
+    assert set(by_topic) == {"self-improvement-reflection", "tool-use-mcp"}
+    assert all(count >= 12 for count in by_topic.values())
+
+    corpus = {}
+    for line in Path("data/papers.md").read_text(encoding="utf-8").splitlines():
+        cells = [c.strip() for c in line.strip("|").split("|")]
+        if len(cells) == 5 and cells[1] in by_topic:
+            corpus[cells[0]] = cells[1]
+    per_paper = Counter(task.paper for task in tasks)
+    assert set(per_paper) == set(corpus)
+    assert min(per_paper.values()) >= 2
     for task in tasks:
-        assert task.id and task.input
+        assert task.id and task.input and task.source
+        assert corpus[task.paper] == task.topic
+        assert task.difficulty in {"easy", "medium", "hard"}
         assert len(task.key_points) in range(3, 6)
         assert len(task.rubric_axes) == 5
 

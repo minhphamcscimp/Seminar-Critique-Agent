@@ -1,0 +1,21 @@
+{
+  "id": "toolformer-limitations",
+  "topic": "tool-use-mcp",
+  "paper": "schick2023",
+  "difficulty": "medium",
+  "input": "Schick et al. (2023) list Toolformer's limitations: it cannot use tools in a chain because API calls for each tool are generated independently, it cannot use a tool interactively (for example browse search results), it is sample-inefficient for some tools, and it does not consider the cost of making an API call. Critique a claim that Toolformer is a general tool-using agent able to chain tools and refine its searches.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "chain",
+    "interactive",
+    "sample-inefficient",
+    "cost of an API call"
+  ],
+  "source": "Schick et al. 2023, Limitations (chunks schick2023-033, schick2023-034)"
+}

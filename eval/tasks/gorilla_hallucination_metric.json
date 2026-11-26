@@ -1,0 +1,21 @@
+{
+  "id": "gorilla-hallucination-metric",
+  "topic": "tool-use-mcp",
+  "paper": "patil2023",
+  "difficulty": "hard",
+  "input": "Patil et al. (2023) report that Gorilla, a fine-tuned LLaMA model, writes API calls better than GPT-4 and largely avoids hallucinated API usage on APIBench, measured by matching the abstract syntax tree (AST) of the generated call against known APIs. Critique a claim that a low hallucination rate on this metric proves the generated API calls are functionally correct when executed.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "AST",
+    "hallucination",
+    "functional correctness",
+    "APIBench"
+  ],
+  "source": "Patil et al. 2023, Abstract and Conclusion (chunks patil2023-000, patil2023-025)"
+}

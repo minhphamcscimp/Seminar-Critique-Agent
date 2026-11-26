@@ -1,0 +1,21 @@
+{
+  "id": "reflexion-feedback-signal",
+  "topic": "self-improvement-reflection",
+  "paper": "shinn2023",
+  "difficulty": "medium",
+  "input": "Shinn et al. (2023) describe Reflexion as natural-language policy optimization: the agent turns a feedback signal from each trial into reflective text and keeps it in a long-term memory limited to a sliding window. For code generation the feedback comes from unit tests, and the authors note that test-driven development is hard for non-deterministic or impure functions. Critique a claim that Reflexion makes any agent improve steadily across trials, whatever the quality of its feedback signal.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "feedback signal",
+    "unit tests",
+    "local minima",
+    "memory capacity"
+  ],
+  "source": "Shinn et al. 2023, Abstract and Limitations (chunks shinn2023-000, shinn2023-023)"
+}

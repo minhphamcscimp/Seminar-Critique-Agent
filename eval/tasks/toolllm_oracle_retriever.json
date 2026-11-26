@@ -1,0 +1,21 @@
+{
+  "id": "toolllm-oracle-retriever",
+  "topic": "tool-use-mcp",
+  "paper": "qin2024",
+  "difficulty": "medium",
+  "input": "Qin et al. (2024) note that APIs on RapidAPI change over time, and in the main ToolBench table every method except ToolLLaMA-DFSDT-Retriever uses the oracle API retriever (ground-truth APIs). DFSDT also explores more solution paths than ReACT. Critique a claim that the main results reflect real-world use where the model must find APIs among 16,000+ by itself.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "oracle API retriever",
+    "RapidAPI",
+    "DFSDT",
+    "same budgets"
+  ],
+  "source": "Qin et al. 2024, Section 3 Experiments, Table 4 (chunks qin2024-017, qin2024-020, qin2024-022)"
+}

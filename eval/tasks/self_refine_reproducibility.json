@@ -1,0 +1,21 @@
+{
+  "id": "self-refine-reproducibility",
+  "topic": "self-improvement-reflection",
+  "paper": "madaan2023",
+  "difficulty": "medium",
+  "input": "Madaan et al. (2023) state that Self-Refine needs base models with sufficient few-shot or instruction-following ability, that all experiments used models that are not open-sourced (GPT-3.5, ChatGPT, GPT-4, Codex) whose training details are undisclosed, and that only English datasets were used. They release code and model outputs. Critique a claim that Self-Refine is model-agnostic and that its reported gains are fully reproducible by anyone.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "instruction-following",
+    "not open-sourced",
+    "English",
+    "weaker models"
+  ],
+  "source": "Madaan et al. 2023, Section 6 Limitations and Discussion (chunk madaan2023-025)"
+}

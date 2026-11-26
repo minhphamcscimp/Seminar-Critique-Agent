@@ -1,0 +1,21 @@
+{
+  "id": "gorilla-api-domain",
+  "topic": "tool-use-mcp",
+  "paper": "patil2023",
+  "difficulty": "easy",
+  "input": "Patil et al. (2023) build APIBench from three hubs of machine learning model APIs (TorchHub, TensorHub and HuggingFace) and show Gorilla surpasses GPT-4 there. Critique a claim that these results show Gorilla can call arbitrary real-world APIs, such as web services, equally well.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "TorchHub",
+    "HuggingFace",
+    "machine learning",
+    "generalizability"
+  ],
+  "source": "Patil et al. 2023, Abstract and Conclusion (chunks patil2023-000, patil2023-025)"
+}

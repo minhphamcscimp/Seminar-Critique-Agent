@@ -1,0 +1,21 @@
+{
+  "id": "self-debug-sample-efficiency",
+  "topic": "self-improvement-reflection",
+  "paper": "chen2024",
+  "difficulty": "hard",
+  "input": "Chen et al. (2024) report state-of-the-art results on Spider and other code benchmarks with Self-Debugging, say that it notably improves sample efficiency, and that code explanation gives 2-3% over the baseline on text-to-SQL and 9% on the hardest problems. Critique a claim that these results prove Self-Debugging is better than simply sampling more candidate programs at the same cost.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "sample efficiency",
+    "more samples",
+    "inference cost",
+    "hardest problems"
+  ],
+  "source": "Chen et al. 2024, Section 5.2.1 and Section 7 Conclusion (chunk chen2024-038)"
+}

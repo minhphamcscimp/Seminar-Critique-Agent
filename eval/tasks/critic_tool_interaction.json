@@ -1,0 +1,21 @@
+{
+  "id": "critic-tool-interaction",
+  "topic": "self-improvement-reflection",
+  "paper": "gou2024",
+  "difficulty": "medium",
+  "input": "Gou et al. (2024) propose CRITIC, where a frozen LLM verifies and corrects its output by interacting with external tools such as a search engine or a code interpreter. They also report that LLMs are unreliable at self-verification and that the gains depend on tool interaction. Critique a claim that CRITIC shows LLMs can correct their own mistakes without any outside help.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "external tools",
+    "self-verification",
+    "without tools",
+    "tool interaction"
+  ],
+  "source": "Gou et al. 2024, Abstract and Section 5 Conclusion (chunks gou2024-000, gou2024-028)"
+}

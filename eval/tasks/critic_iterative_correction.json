@@ -1,0 +1,21 @@
+{
+  "id": "critic-iterative-correction",
+  "topic": "self-improvement-reflection",
+  "paper": "gou2024",
+  "difficulty": "hard",
+  "input": "Gou et al. (2024) report that iterative correction in CRITIC generally improves results, with a notable surge when only erroneous samples are modified (an oracle setting), and that the marginal benefit of more corrections diminishes, with 2-3 rounds giving most of the gain. Critique a claim that more correction rounds always help and that the oracle-setting numbers describe realistic deployment.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "oracle setting",
+    "erroneous samples",
+    "diminishing returns",
+    "correction rounds"
+  ],
+  "source": "Gou et al. 2024, Section 4.4 Additional Ablations and Analysis (chunk gou2024-026)"
+}

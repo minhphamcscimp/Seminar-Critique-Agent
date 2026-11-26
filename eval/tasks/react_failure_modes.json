@@ -1,0 +1,21 @@
+{
+  "id": "react-failure-modes",
+  "topic": "tool-use-mcp",
+  "paper": "yao2023",
+  "difficulty": "medium",
+  "input": "Yao et al. (2023) manually labeled 200 HotpotQA trajectories from ReAct and CoT. CoT fails mostly through hallucination, while ReAct's failures include reasoning errors such as repetitive steps and non-informative search results that derail reasoning; the best prompting results combine ReAct with CoT-SC. Critique a claim that ReAct removes hallucination and is strictly better than chain-of-thought.",
+  "rubric_axes": [
+    "assumptions",
+    "baseline fairness",
+    "data reliability",
+    "generalizability",
+    "reproducibility"
+  ],
+  "key_points": [
+    "hallucination",
+    "non-informative search",
+    "reasoning error",
+    "CoT-SC"
+  ],
+  "source": "Yao et al. 2023, Section 3.3 Results and Observations (chunks yao2023-016 to yao2023-018)"
+}
