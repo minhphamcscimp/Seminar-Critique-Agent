@@ -64,6 +64,8 @@ _BAD_START = frozenset("we our in this it for these each".split())
 
 def _heading_like(title: str) -> bool:
     """Headings are short; footnotes and body lines are sentences ("We discard all examples ...")."""
+    if not title.isprintable():
+        return False  # control characters from a broken PDF font ("EV\x03)URQW\x035RZ" in ReAct)
     words = title.split()
     if not 1 <= len(words) <= 10 or words[0].lower() in _BAD_START or any(ch in title for ch in "\\$^~|<>@") \
             or any(len(w) > 18 for w in words):
@@ -318,5 +320,7 @@ if __name__ == "__main__":
     ap.add_argument("--topic", help="only this topic id")
     ap.add_argument("--no-download", action="store_true", help="use files already in data/raw/")
     ap.add_argument("--verbose", action="store_true", help="print every section with its size")
+    ap.add_argument("--out", type=Path, default=CHUNKS_JSONL,
+                    help="where to write the chunks (default data/chunks.jsonl); use another file to compare")
     args = ap.parse_args()
-    ingest(topic=args.topic, download=not args.no_download, verbose=args.verbose)
+    ingest(topic=args.topic, download=not args.no_download, out=args.out, verbose=args.verbose)

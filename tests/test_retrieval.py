@@ -294,3 +294,46 @@ def test_max_per_paper_keeps_one_paper_from_taking_all_slots():
     assert len({c.paper for c in capped}) >= 2
     uncapped = retrieve_with(q, TOOLS, 5, max_per_paper=None)
     assert len(uncapped) == 5
+
+
+def test_heading_with_control_characters_rejected():
+    # ReAct (yao2023): a figure label with a broken font became "Section 2 EV\x03\x16 \x03)URQW..."
+    text = "\n".join([
+        "Abstract", "this is the abstract of the paper " * 8,
+        "1 Introduction", "this is the intro of the paper " * 8,
+        "2 EV\x03\x16 \x03)URQW\x035RZ\x03LV\x03D \x03",
+        "2 Method", "this is the method of the paper " * 8,
+        "3 Results", "these are the results of the paper " * 8,
+        "References",
+    ])
+    names = [n for n, _ in sections_from_text(text)]
+    assert names == ["Abstract", "Section 1 Introduction", "Section 2 Method", "Section 3 Results"]
+
+
+# ---- every eval task (D3: run on all tasks in eval/tasks/, including new ones) ----
+from seminar_critique.retrieval.check_tasks import check_task, load_tasks, target_papers  # noqa: E402
+
+TASKS = load_tasks()
+MIN_HIT_RATE = 0.8   # misses are allowed (report examples), a drop below this is a regression
+
+
+@pytest.mark.parametrize("task", TASKS, ids=[t["id"] for t in TASKS])
+def test_every_task_gets_k_chunks_with_source(task):
+    ix = get_index()
+    topic_papers = {ix.chunks[i]["paper"] for i in ix.by_topic[task["topic"]]}
+    chunks = retrieve(task["input"][:200], task["topic"], 5)   # same query as the orchestrator
+    assert len(chunks) == 5
+    assert all(c.paper and c.section and c.text for c in chunks)
+    assert {c.paper for c in chunks} <= topic_papers
+
+
+@pytest.mark.parametrize("task", TASKS, ids=[t["id"] for t in TASKS])
+def test_every_task_names_the_paper_under_critique(task):
+    # The check needs "Surname et al." of a corpus paper in the task input.
+    assert target_papers(task), f"{task['id']}: input does not cite a paper of topic {task['topic']}"
+
+
+def test_paper_under_critique_is_retrieved_for_most_tasks():
+    rows = [check_task(t) for t in TASKS if target_papers(t)]
+    hits = sum(r["graph"]["hit"] for r in rows)
+    assert hits / len(rows) >= MIN_HIT_RATE, [r["task_id"] for r in rows if not r["graph"]["hit"]]

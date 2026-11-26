@@ -1,0 +1,740 @@
+[
+  {
+    "task_id": "example-01",
+    "topic": "self-improvement-reflection",
+    "target": [
+      "huang2024"
+    ],
+    "query_chars": 121,
+    "graph": {
+      "hit": true,
+      "first_rank": 3,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "kamoi2024-016",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 3.2 Frameworks for Verifying RQs",
+          "score": 1.32
+        },
+        {
+          "id": "kamoi2024-028",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 5.2 Self-Correction with Fine-tuning",
+          "score": 1.2602
+        },
+        {
+          "id": "huang2024-003",
+          "paper": "Huang et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 1.2357
+        },
+        {
+          "id": "huang2024-002",
+          "paper": "Huang et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 1.2239
+        },
+        {
+          "id": "huang2024-004",
+          "paper": "Huang et al. 2024",
+          "section": "Section 2 BACKGROUND AND RELATED WORK",
+          "score": 1.1328
+        }
+      ]
+    },
+    "bm25": {
+      "hit": true,
+      "first_rank": 4,
+      "target_chunks": 2,
+      "top_k": [
+        {
+          "id": "kamoi2024-001",
+          "paper": "Kamoi et al. 2024",
+          "section": "Introduction",
+          "score": 20.9435
+        },
+        {
+          "id": "kamoi2024-015",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 3.2 Frameworks for Verifying RQs",
+          "score": 20.8016
+        },
+        {
+          "id": "kamoi2024-027",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 5.2 Self-Correction with Fine-tuning",
+          "score": 19.355
+        },
+        {
+          "id": "huang2024-003",
+          "paper": "Huang et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 16.0223
+        },
+        {
+          "id": "huang2024-002",
+          "paper": "Huang et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 15.5281
+        }
+      ]
+    }
+  },
+  {
+    "task_id": "gorilla-api-retrieval",
+    "topic": "tool-use-mcp",
+    "target": [
+      "patil2023"
+    ],
+    "query_chars": 200,
+    "graph": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "patil2023-000",
+          "paper": "Patil et al. 2023",
+          "section": "Abstract",
+          "score": 1.0
+        },
+        {
+          "id": "patil2023-016",
+          "paper": "Patil et al. 2023",
+          "section": "Related Work",
+          "score": 0.9984
+        },
+        {
+          "id": "patil2023-012",
+          "paper": "Patil et al. 2023",
+          "section": "Related Work",
+          "score": 0.9801
+        },
+        {
+          "id": "qin2024-004",
+          "paper": "Qin et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 0.9418
+        },
+        {
+          "id": "qin2024-023",
+          "paper": "Qin et al. 2024",
+          "section": "Section 3 APIs & API",
+          "score": 0.8922
+        }
+      ]
+    },
+    "bm25": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "patil2023-000",
+          "paper": "Patil et al. 2023",
+          "section": "Abstract",
+          "score": 32.3312
+        },
+        {
+          "id": "patil2023-011",
+          "paper": "Patil et al. 2023",
+          "section": "Related Work",
+          "score": 27.4135
+        },
+        {
+          "id": "patil2023-015",
+          "paper": "Patil et al. 2023",
+          "section": "Related Work",
+          "score": 25.6598
+        },
+        {
+          "id": "qin2024-024",
+          "paper": "Qin et al. 2024",
+          "section": "Section 3 APIs & API",
+          "score": 19.3146
+        },
+        {
+          "id": "qin2024-005",
+          "paper": "Qin et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 18.3994
+        }
+      ]
+    }
+  },
+  {
+    "task_id": "huang-evaluation-fairness",
+    "topic": "self-improvement-reflection",
+    "target": [
+      "huang2024"
+    ],
+    "query_chars": 200,
+    "graph": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "huang2024-016",
+          "paper": "Huang et al. 2024",
+          "section": "Section 7 Standard Prompting (ours)",
+          "score": 1.4931
+        },
+        {
+          "id": "huang2024-017",
+          "paper": "Huang et al. 2024",
+          "section": "Section 7 Standard Prompting (ours)",
+          "score": 1.4863
+        },
+        {
+          "id": "huang2024-015",
+          "paper": "Huang et al. 2024",
+          "section": "Section 6 Self-Consistency",
+          "score": 0.9787
+        },
+        {
+          "id": "kamoi2024-023",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 5.2 Self-Correction with Fine-tuning",
+          "score": 0.9406
+        },
+        {
+          "id": "kamoi2024-022",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 5.2 Self-Correction with Fine-tuning",
+          "score": 0.8151
+        }
+      ]
+    },
+    "bm25": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "huang2024-016",
+          "paper": "Huang et al. 2024",
+          "section": "Section 7 Standard Prompting (ours)",
+          "score": 36.4735
+        },
+        {
+          "id": "huang2024-017",
+          "paper": "Huang et al. 2024",
+          "section": "Section 7 Standard Prompting (ours)",
+          "score": 35.9721
+        },
+        {
+          "id": "huang2024-002",
+          "paper": "Huang et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 27.6398
+        },
+        {
+          "id": "kamoi2024-023",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 5.2 Self-Correction with Fine-tuning",
+          "score": 26.8323
+        },
+        {
+          "id": "kamoi2024-001",
+          "paper": "Kamoi et al. 2024",
+          "section": "Introduction",
+          "score": 22.0423
+        }
+      ]
+    }
+  },
+  {
+    "task_id": "huang-intrinsic-self-correction",
+    "topic": "self-improvement-reflection",
+    "target": [
+      "huang2024"
+    ],
+    "query_chars": 200,
+    "graph": {
+      "hit": true,
+      "first_rank": 3,
+      "target_chunks": 2,
+      "top_k": [
+        {
+          "id": "kamoi2024-028",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 5.2 Self-Correction with Fine-tuning",
+          "score": 1.2776
+        },
+        {
+          "id": "kamoi2024-007",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 2.2 Sources of Feedback",
+          "score": 1.2759
+        },
+        {
+          "id": "huang2024-001",
+          "paper": "Huang et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 1.2715
+        },
+        {
+          "id": "kamoi2024-005",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 2.1 Frameworks",
+          "score": 1.2575
+        },
+        {
+          "id": "huang2024-000",
+          "paper": "Huang et al. 2024",
+          "section": "Abstract",
+          "score": 1.224
+        }
+      ]
+    },
+    "bm25": {
+      "hit": true,
+      "first_rank": 4,
+      "target_chunks": 2,
+      "top_k": [
+        {
+          "id": "kamoi2024-027",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 5.2 Self-Correction with Fine-tuning",
+          "score": 28.3992
+        },
+        {
+          "id": "kamoi2024-001",
+          "paper": "Kamoi et al. 2024",
+          "section": "Introduction",
+          "score": 27.6907
+        },
+        {
+          "id": "kamoi2024-006",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 2.1 Frameworks",
+          "score": 26.2857
+        },
+        {
+          "id": "huang2024-001",
+          "paper": "Huang et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 23.081
+        },
+        {
+          "id": "huang2024-000",
+          "paper": "Huang et al. 2024",
+          "section": "Abstract",
+          "score": 20.3794
+        }
+      ]
+    }
+  },
+  {
+    "task_id": "react-interleaving",
+    "topic": "tool-use-mcp",
+    "target": [
+      "yao2023"
+    ],
+    "query_chars": 200,
+    "graph": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "yao2023-004",
+          "paper": "Yao et al. 2023",
+          "section": "Section 2 EV\u0003\u0016 \u0003)URQW\u00035RZ\u0003LV\u0003D \u0003",
+          "score": 1.0616
+        },
+        {
+          "id": "yao2023-001",
+          "paper": "Yao et al. 2023",
+          "section": "Section 1 INTRODUCTION",
+          "score": 1.0472
+        },
+        {
+          "id": "yao2023-005",
+          "paper": "Yao et al. 2023",
+          "section": "Section 2 EV\u0003\u0016 \u0003)URQW\u00035RZ\u0003LV\u0003D \u0003",
+          "score": 1.0407
+        },
+        {
+          "id": "qin2024-003",
+          "paper": "Qin et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 0.6883
+        },
+        {
+          "id": "qin2024-004",
+          "paper": "Qin et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 0.6404
+        }
+      ]
+    },
+    "bm25": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "yao2023-000",
+          "paper": "Yao et al. 2023",
+          "section": "Abstract",
+          "score": 40.2223
+        },
+        {
+          "id": "yao2023-004",
+          "paper": "Yao et al. 2023",
+          "section": "Section 2 EV\u0003\u0016 \u0003)URQW\u00035RZ\u0003LV\u0003D \u0003",
+          "score": 29.0293
+        },
+        {
+          "id": "yao2023-005",
+          "paper": "Yao et al. 2023",
+          "section": "Section 2 EV\u0003\u0016 \u0003)URQW\u00035RZ\u0003LV\u0003D \u0003",
+          "score": 27.3432
+        },
+        {
+          "id": "qin2024-004",
+          "paper": "Qin et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 21.735
+        },
+        {
+          "id": "qin2024-027",
+          "paper": "Qin et al. 2024",
+          "section": "Section 4 RELATED WORK",
+          "score": 16.3254
+        }
+      ]
+    }
+  },
+  {
+    "task_id": "reflexion-memory",
+    "topic": "self-improvement-reflection",
+    "target": [
+      "shinn2023"
+    ],
+    "query_chars": 200,
+    "graph": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "shinn2023-000",
+          "paper": "Shinn et al. 2023",
+          "section": "Abstract",
+          "score": 1.0
+        },
+        {
+          "id": "shinn2023-001",
+          "paper": "Shinn et al. 2023",
+          "section": "Introduction",
+          "score": 0.9305
+        },
+        {
+          "id": "shinn2023-016",
+          "paper": "Shinn et al. 2023",
+          "section": "Related Work",
+          "score": 0.8866
+        },
+        {
+          "id": "chen2024-036",
+          "paper": "Chen et al. 2024",
+          "section": "Section 6 RELATED WORK",
+          "score": 0.6117
+        },
+        {
+          "id": "chen2024-037",
+          "paper": "Chen et al. 2024",
+          "section": "Section 6 RELATED WORK",
+          "score": 0.6031
+        }
+      ]
+    },
+    "bm25": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "shinn2023-000",
+          "paper": "Shinn et al. 2023",
+          "section": "Abstract",
+          "score": 38.6423
+        },
+        {
+          "id": "shinn2023-017",
+          "paper": "Shinn et al. 2023",
+          "section": "Related Work",
+          "score": 29.5412
+        },
+        {
+          "id": "shinn2023-002",
+          "paper": "Shinn et al. 2023",
+          "section": "Introduction",
+          "score": 22.6683
+        },
+        {
+          "id": "chen2024-037",
+          "paper": "Chen et al. 2024",
+          "section": "Section 6 RELATED WORK",
+          "score": 19.4408
+        },
+        {
+          "id": "huang2024-005",
+          "paper": "Huang et al. 2024",
+          "section": "Section 2 BACKGROUND AND RELATED WORK",
+          "score": 14.9225
+        }
+      ]
+    }
+  },
+  {
+    "task_id": "self-refine-feedback",
+    "topic": "self-improvement-reflection",
+    "target": [
+      "madaan2023"
+    ],
+    "query_chars": 200,
+    "graph": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "madaan2023-000",
+          "paper": "Madaan et al. 2023",
+          "section": "Abstract",
+          "score": 1.4043
+        },
+        {
+          "id": "madaan2023-001",
+          "paper": "Madaan et al. 2023",
+          "section": "Section 1 Introduction",
+          "score": 1.3086
+        },
+        {
+          "id": "chen2024-036",
+          "paper": "Chen et al. 2024",
+          "section": "Section 6 RELATED WORK",
+          "score": 1.2058
+        },
+        {
+          "id": "madaan2023-002",
+          "paper": "Madaan et al. 2023",
+          "section": "Section 1 Introduction",
+          "score": 1.1976
+        },
+        {
+          "id": "chen2024-037",
+          "paper": "Chen et al. 2024",
+          "section": "Section 6 RELATED WORK",
+          "score": 0.976
+        }
+      ]
+    },
+    "bm25": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "madaan2023-000",
+          "paper": "Madaan et al. 2023",
+          "section": "Abstract",
+          "score": 30.3911
+        },
+        {
+          "id": "madaan2023-023",
+          "paper": "Madaan et al. 2023",
+          "section": "Section 5 Related work",
+          "score": 30.2973
+        },
+        {
+          "id": "madaan2023-001",
+          "paper": "Madaan et al. 2023",
+          "section": "Section 1 Introduction",
+          "score": 24.575
+        },
+        {
+          "id": "chen2024-037",
+          "paper": "Chen et al. 2024",
+          "section": "Section 6 RELATED WORK",
+          "score": 24.2163
+        },
+        {
+          "id": "kamoi2024-022",
+          "paper": "Kamoi et al. 2024",
+          "section": "Section 5.2 Self-Correction with Fine-tuning",
+          "score": 23.7026
+        }
+      ]
+    }
+  },
+  {
+    "task_id": "toolformer-api-selection",
+    "topic": "tool-use-mcp",
+    "target": [
+      "schick2023"
+    ],
+    "query_chars": 200,
+    "graph": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "schick2023-000",
+          "paper": "Schick et al. 2023",
+          "section": "Abstract",
+          "score": 1.0
+        },
+        {
+          "id": "schick2023-001",
+          "paper": "Schick et al. 2023",
+          "section": "Introduction",
+          "score": 0.9138
+        },
+        {
+          "id": "schick2023-033",
+          "paper": "Schick et al. 2023",
+          "section": "Limitations",
+          "score": 0.9064
+        },
+        {
+          "id": "patil2023-014",
+          "paper": "Patil et al. 2023",
+          "section": "Related Work",
+          "score": 0.7358
+        },
+        {
+          "id": "patil2023-012",
+          "paper": "Patil et al. 2023",
+          "section": "Related Work",
+          "score": 0.7272
+        }
+      ]
+    },
+    "bm25": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "schick2023-000",
+          "paper": "Schick et al. 2023",
+          "section": "Abstract",
+          "score": 27.4158
+        },
+        {
+          "id": "schick2023-033",
+          "paper": "Schick et al. 2023",
+          "section": "Limitations",
+          "score": 17.3683
+        },
+        {
+          "id": "schick2023-034",
+          "paper": "Schick et al. 2023",
+          "section": "Limitations",
+          "score": 14.9605
+        },
+        {
+          "id": "patil2023-013",
+          "paper": "Patil et al. 2023",
+          "section": "Related Work",
+          "score": 14.5878
+        },
+        {
+          "id": "patil2023-008",
+          "paper": "Patil et al. 2023",
+          "section": "Related Work",
+          "score": 14.496
+        }
+      ]
+    }
+  },
+  {
+    "task_id": "toolllm-toolbench",
+    "topic": "tool-use-mcp",
+    "target": [
+      "qin2024"
+    ],
+    "query_chars": 200,
+    "graph": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "qin2024-004",
+          "paper": "Qin et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 1.0
+        },
+        {
+          "id": "qin2024-000",
+          "paper": "Qin et al. 2024",
+          "section": "Abstract",
+          "score": 0.9585
+        },
+        {
+          "id": "qin2024-005",
+          "paper": "Qin et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 0.923
+        },
+        {
+          "id": "patil2023-006",
+          "paper": "Patil et al. 2023",
+          "section": "Related Work",
+          "score": 0.6522
+        },
+        {
+          "id": "patil2023-007",
+          "paper": "Patil et al. 2023",
+          "section": "Related Work",
+          "score": 0.5656
+        }
+      ]
+    },
+    "bm25": {
+      "hit": true,
+      "first_rank": 1,
+      "target_chunks": 3,
+      "top_k": [
+        {
+          "id": "qin2024-004",
+          "paper": "Qin et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 32.8618
+        },
+        {
+          "id": "qin2024-000",
+          "paper": "Qin et al. 2024",
+          "section": "Abstract",
+          "score": 31.4971
+        },
+        {
+          "id": "qin2024-002",
+          "paper": "Qin et al. 2024",
+          "section": "Section 1 INTRODUCTION",
+          "score": 22.0517
+        },
+        {
+          "id": "patil2023-007",
+          "paper": "Patil et al. 2023",
+          "section": "Related Work",
+          "score": 15.3016
+        },
+        {
+          "id": "schick2023-012",
+          "paper": "Schick et al. 2023",
+          "section": "Introduction",
+          "score": 12.143
+        }
+      ]
+    }
+  }
+]
