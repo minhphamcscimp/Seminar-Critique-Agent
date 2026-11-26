@@ -190,12 +190,23 @@ def test_summary_with_no_complete_tasks_withholds_metrics():
             "cost_usd": 0.01,
             "latency_s": 1.0,
         }],
+        "B": [{
+            "task_id": "other",
+            "config": "B",
+            "run": "0",
+            "key_point_recall": 0.5,
+            "rubric_axis_coverage": 0.4,
+            "prompt_tokens": 10,
+            "completion_tokens": 5,
+            "cost_usd": 0.01,
+            "latency_s": 1.0,
+        }],
     }
 
     summary = summarize._render(partial_rows, expected_repeats=1)
 
     assert "**No complete task available; metrics are withheld.**" in summary
-    assert "Incomplete tasks excluded: interrupted." in summary
+    assert "Incomplete tasks excluded: interrupted, other." in summary
 
 
 def test_runner_keeps_only_fully_completed_tasks_when_interrupted(

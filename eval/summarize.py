@@ -71,7 +71,7 @@ def _normalize(row: Row, where: str = "row") -> Row:
         out["score"], out["verdict"] = None, "error"
     else:
         out["verdict"] = str(row.get("verdict") or verdict(out["score"]))
-    for column in ("reflection_iters", "reflection_changed"):
+    for column in ("reflection_iters", "reflection_changed", "tool_found"):
         value = row.get(column)
         out[column] = None if value in ("", None) else _number(value, column, where)
     return out
@@ -129,10 +129,13 @@ def _complete_task_ids(rows_by_config: dict[str, list[Row]], expected_repeats: i
         for row in rows:
             task_runs[str(row["task_id"])][config].add(str(row["run"]))
 
+    # A task is complete when it has every repeat for every config that appears in the
+    # CSV (not every config in CONFIGS: a new ablation config must not hide A/B/C).
+    required = set(rows_by_config)
     expected_runs = {str(run) for run in range(expected_repeats)}
     complete = {
         task_id for task_id, configs in task_runs.items()
-        if set(configs) == set(CONFIGS) and all(runs == expected_runs for runs in configs.values())
+        if set(configs) == required and all(runs == expected_runs for runs in configs.values())
     }
     return complete, set(task_runs) - complete
 
@@ -216,6 +219,23 @@ def _reflection_lines(rows_by_config: dict[str, list[Row]]) -> list[str]:
     )
     lines += ["", "\"Changed\" = the final answer differs from the Synthesizer draft (whitespace and case ignored).", ""]
     return lines
+
+
+def _tool_lines(rows_by_config: dict[str, list[Row]]) -> list[str]:
+    """R1: how often the benchmark tool returned evidence (found=true)."""
+    body = []
+    for config, rows in rows_by_config.items():
+        recorded = [r for r in rows if not r["error"] and r["tool_found"] is not None]
+        if not CONFIGS[config].use_tools or not recorded:
+            continue
+        tasks_with = {r["task_id"] for r in recorded if r["tool_found"] > 0}
+        all_tasks = {r["task_id"] for r in recorded}
+        body.append([config, f"{len(tasks_with)}/{len(all_tasks)} ({len(tasks_with) / len(all_tasks):.0%})",
+                     _mean_sd([r["tool_found"] for r in recorded], 2)])
+    if not body:
+        return []
+    return ["## Benchmark tool evidence (R1)", ""] + _table(
+        ["Config", "Tasks with >= 1 record found", "Records found per run (mean +/- SD)"], body) + [""]
 
 
 def _paired_lines(rows_by_config: dict[str, list[Row]]) -> list[str]:
@@ -310,7 +330,7 @@ def _render(
     if not complete_task_ids:
         lines += [
             "**No complete task available; metrics are withheld.** Each included task "
-            "must have matching run numbers for configurations A, B, and C.",
+            "must have every repeat for every configuration in the CSV.",
             "",
         ]
         if incomplete_task_ids:
@@ -342,6 +362,7 @@ def _render(
         "",
     ]
     lines += _reflection_lines(included)
+    lines += _tool_lines(included)
     lines += _paired_lines(included)
     if judge:
         lines += _judge_lines(included, judge)

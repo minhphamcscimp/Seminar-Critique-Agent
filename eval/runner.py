@@ -36,7 +36,7 @@ FIELDS = [
     "run_id", "task_id", "topic", "difficulty", "config", "run", "model", "timestamp",
     "key_point_recall", "rubric_axis_coverage", "score", "verdict",
     "prompt_tokens", "completion_tokens", "tokens", "cost_usd", "latency_s",
-    "reflection_iters", "reflection_changed", "error", "retries", "trace_path",
+    "reflection_iters", "reflection_changed", "tool_found", "error", "retries", "trace_path",
 ]
 # Columns of the D2 file (results.csv before D3). Resume refuses to mix the two.
 LEGACY_FIELDS = [
@@ -114,6 +114,12 @@ def reflection_stats(result: Result) -> tuple[int, int]:
     return iters, changed
 
 
+def tool_found(result: Result) -> int:
+    """Benchmark records the tool returned with found=true (R1); counted once per run."""
+    calls = [c for step in result.trace if step.agent == "critic" for c in step.tool_calls]
+    return sum(1 for c in calls if isinstance(c.get("result"), dict) and c["result"].get("found"))
+
+
 def model_label(cfg: Config) -> str:
     """Models the config really calls (A only calls the baseline agent)."""
     agents = ["baseline"] if not cfg.use_pipeline else [
@@ -168,7 +174,7 @@ def run_one(task: Task, name: str, run: int, llm: LLMClient, llm_name: str,
             "key_point_recall": "", "rubric_axis_coverage": "", "score": "",
             "verdict": "error", "prompt_tokens": 0, "completion_tokens": 0, "tokens": 0,
             "cost_usd": 0.0, "latency_s": round(time.perf_counter() - started, 3),
-            "reflection_iters": "", "reflection_changed": "",
+            "reflection_iters": "", "reflection_changed": "", "tool_found": "",
         })
     else:
         s = score(task, result)
@@ -186,6 +192,7 @@ def run_one(task: Task, name: str, run: int, llm: LLMClient, llm_name: str,
             "latency_s": round(usage.latency_s, 3),
             "reflection_iters": iters if config.max_reflection_iters else "",
             "reflection_changed": changed if config.max_reflection_iters else "",
+            "tool_found": tool_found(result) if config.use_tools else "",
         })
     meta = {k: row[k] for k in ("run_id", "model", "timestamp", "error", "retries")}
     row["trace_path"] = save_trace(result, traces_dir, task, name, run, meta)
