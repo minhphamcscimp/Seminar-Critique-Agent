@@ -30,6 +30,11 @@ def compare(old: list[dict], new: list[dict]) -> dict:
     }
 
 
+def _sections(rows: list[dict], paper_id: str) -> list[str]:
+    """Section labels of one paper in reading order, each once."""
+    return list(dict.fromkeys(c["section"] for c in rows if c["paper_id"] == paper_id))
+
+
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser()
@@ -46,7 +51,12 @@ def main() -> None:
     a = {c["id"]: c for c in old}
     for i in d["relabelled"][:10]:
         print(f"  {i}: {a[i]['section']!r} -> {b[i]['section']!r}")
-    if not any(d[k] for k in ("added", "removed", "relabelled", "text_changed")):
+    changed = sorted({i.rsplit("-", 1)[0] for k in ("added", "removed", "relabelled", "text_changed") for i in d[k]})
+    for pid in changed:
+        print(f"\n{pid} sections")
+        print("  old:", " | ".join(_sections(old, pid)))
+        print("  new:", " | ".join(_sections(new, pid)))
+    if not changed:
         print("IDENTICAL content: ingest reproduces the committed chunks")
 
 

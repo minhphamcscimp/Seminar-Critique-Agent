@@ -68,7 +68,7 @@ def _heading_like(title: str) -> bool:
         return False  # control characters from a broken PDF font ("EV\x03)URQW\x035RZ" in ReAct)
     words = title.split()
     if not 1 <= len(words) <= 10 or words[0].lower() in _BAD_START or any(ch in title for ch in "\\$^~|<>@") \
-            or any(len(w) > 18 for w in words):
+            or any(len(part) > 18 for w in words for part in w.split("-")):  # "KNOWLEDGE-INTENSIVE" is fine
         return False
     return len([w for w in words if w[0].islower() and w not in _SMALL]) <= 5
 
@@ -76,6 +76,11 @@ def _heading_like(title: str) -> bool:
 def _looks_like_title(t: str) -> bool:
     return (3 <= len(t) <= 80 and t[0].isupper() and len(t.split()) <= 10
             and not t.endswith((".", ":", ",")) and _heading_like(t))
+
+
+def _caps_title(t: str) -> bool:
+    """An all-caps heading line, e.g. ICLR small caps that the PDF does not mark as bold."""
+    return t.isupper() and t.isprintable() and _looks_like_title(t)
 
 
 def _parse_num(num: str) -> tuple[int, ...]:
@@ -86,6 +91,8 @@ def _numbering_ok(nums: tuple[int, ...], last: tuple[int, ...]) -> bool:
     """A real heading number goes forward: 2 -> 2.1 -> 2.2 -> 3. Rejects page numbers,
     footnotes ("1 Work done at ...") and table rows that look like headings."""
     max_jump = 2 if last[0] > 0 else 1
+    if len(nums) >= 2 and len(last) >= 2 and nums[0] == last[0] and nums[1] > last[1] + max_jump:
+        return False  # 5.2.3 -> 5.8 is a table value ("5.8 Wrong COUNT columns"), not a heading
     return nums > last and nums[0] <= last[0] + max_jump
 
 
@@ -108,8 +115,11 @@ def _split_sections(text: str, use_bold: bool) -> list[tuple[str, str]]:
     def numbered(num: str, title: str) -> str | None:
         nonlocal last, started
         nums = _parse_num(num)
-        if any(tok.isdigit() for tok in title.split()) or not _heading_like(title):
+        toks = title.split()
+        if any(tok.isdigit() for tok in toks) or not _heading_like(title):
             return None  # table row such as "4 Llama 70 12", or a footnote sentence
+        if len(toks) == 1 and any(ch.isdigit() for ch in title):
+            return None  # table row "5 GPT-4" or "5 Llama-2" (Huang et al. 2024, Tables 3-4)
         if title.lower().startswith("introduction"):
             last, started = nums, True
         elif not (started and _numbering_ok(nums, last)):
@@ -125,7 +135,7 @@ def _split_sections(text: str, use_bold: bool) -> list[tuple[str, str]]:
         new_label = None
         if low in STOP:
             break
-        if bold[i] and low in NAMED and len(s) < 30:
+        if (bold[i] or s.isupper()) and low in NAMED and len(s) < 30:   # "ABSTRACT" in small caps
             new_label = s.strip(":").title()
             if low in ("abstract", "introduction"):
                 started = True
@@ -133,7 +143,9 @@ def _split_sections(text: str, use_bold: bool) -> list[tuple[str, str]]:
                 last = (1,)
         elif bold[i] and (m := NUM_TITLE.match(s)):
             new_label = numbered(m.group(1), m.group(2))
-        elif (m := NUM_ONLY.match(s)) and i + 1 < len(lines) and bold[i + 1] and _looks_like_title(lines[i + 1]):
+        elif (m := NUM_ONLY.match(s)) and i + 1 < len(lines) and (bold[i + 1] or _caps_title(lines[i + 1])) \
+                and _looks_like_title(lines[i + 1]) and not (i > 0 and re.fullmatch(r"\d{1,2}", lines[i - 1])):
+            # (a number right after another bare integer is a figure axis "1 2 3", not a heading)
             new_label = numbered(m.group(1), lines[i + 1])
             if new_label:
                 i += 1
@@ -175,12 +187,16 @@ def drop_garbled_lines(text: str) -> tuple[str, int]:
     Drop long lines that contain no common English word. Headings are kept."""
     common = {"the", "of", "and", "to", "in", "a", "is", "we", "for", "that", "with", "on", "as", "by", "this"}
     kept, dropped = [], 0
+    prev = ""
     for line in text.splitlines():
         plain = line.removeprefix(BOLD_MARK.strip()).strip()
         if plain.lower().strip(":") in STOP:
             break  # the reference list: not used, not counted
         words = set(re.findall(r"[a-z]+", plain.lower()))
         heading = (m := NUM_TITLE.match(plain)) is not None and " " in m.group(2)
+        # "2" on one line, "REACT: SYNERGIZING REASONING + ACTING" on the next (ICLR small caps)
+        heading = heading or (NUM_ONLY.match(prev) is not None and _caps_title(plain))
+        prev = plain
         if len(plain) >= 30 and not (words & common) and not line.startswith(BOLD_MARK.strip()) and not heading:
             dropped += 1
             continue
