@@ -21,7 +21,7 @@ Slides: see the team slide deck (Memory + GraphRAG part, 1.5 minutes).
 
 | Member | Responsibility | Real outputs | Evidence | Proposed share |
 |---|---|---|---|---|
-| Minh | Repo set-up and management; GraphRAG retrieval (`retrieval/`, `data/`); reproducibility (README, pinned deps, clean checkout); slide assembly; report Section 3 R3 and Section 8 | Repo skeleton and contracts; ingest, chunker, graph, BM25 + graph retriever, stats; per-task retrieval check (25/25); section-label fix and corpus rebuild; README quick start / reproducibility; `docs/repro_check.md`; R3 + Ethics drafts; slide deck | PR #1, #2 (D2), #15, #17 (D3); commits `8db398b`, `7387ec1`, `f333151`, `53f0fc0`, `1e5254e`, `593ab7f`, `52301c2`, `b71b024`, `ca61de4` | [TBD, agreed by the group] |
+| Minh | Repo set-up and management; GraphRAG retrieval (`retrieval/`, `data/`); reproducibility (README, pinned deps, clean checkout); team slide template (Vân assembles the final deck); report Section 3 R3 and Section 8 | Repo skeleton and contracts; ingest, chunker, graph, BM25 + graph retriever, stats; per-task retrieval check (25/25); section-label fix and corpus rebuild; README quick start / reproducibility; `docs/repro_check.md`; R3 + Ethics drafts; team slide template + 2 Memory/GraphRAG slides | PR #1, #2 (D2), #15, #17 (D3); commits `8db398b`, `7387ec1`, `f333151`, `53f0fc0`, `1e5254e`, `593ab7f`, `52301c2`, `b71b024`, `ca61de4` | [TBD, agreed by the group] |
 
 ## 3. AI-use statement (Minh) - to complete honestly
 
