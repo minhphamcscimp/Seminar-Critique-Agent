@@ -10,6 +10,7 @@ from dataclasses import dataclass
 import pytest
 
 from seminar_critique.agents.base import UNTRUSTED_RULE
+from seminar_critique.agents.base import InvalidAgentOutput, call_agent
 from seminar_critique.agents.critic import RUBRIC_AXES, SYSTEM as CRITIC_SYSTEM
 from seminar_critique.agents.reflection import NO_CHANGE
 from seminar_critique.agents.summarizer import SYSTEM as SUMMARIZER_SYSTEM
@@ -17,6 +18,7 @@ from seminar_critique.configs import CONFIGS, resolve_models
 from seminar_critique.llm import FakeLLM, GeminiClient
 from seminar_critique.llm.pricing import estimate_cost_usd, price_per_million
 from seminar_critique.orchestrator import run_pipeline
+from seminar_critique import orchestrator
 from seminar_critique.schemas import Task
 
 TASK = Task(
@@ -153,3 +155,70 @@ def test_reflection_stops_early_and_keeps_the_draft():
 def test_config_c_still_runs_both_reflections_when_the_draft_changes():
     result = run_pipeline(TASK, CONFIGS["C"], FakeLLM())
     assert len([s for s in result.trace if s.agent == "reflection"]) == 2
+
+
+def test_malformed_json_is_retried_only_once():
+    class BrokenThenValid(FakeLLM):
+        calls = 0
+
+        def complete(self, messages, *, model, temperature=0.0, max_tokens=2048):
+            self.calls += 1
+            resp = super().complete(messages, model=model, temperature=temperature)
+            resp.text = '{broken' if self.calls == 1 else 'valid critique'
+            return resp
+
+    llm = BrokenThenValid()
+    answer, _ = call_agent(llm, CONFIGS["A"], "baseline", "system", "user")
+    assert answer == "valid critique"
+    assert llm.calls == 2
+
+
+def test_permanently_invalid_output_fails_instead_of_succeeding():
+    class Broken(FakeLLM):
+        calls = 0
+
+        def complete(self, messages, *, model, temperature=0.0, max_tokens=2048):
+            self.calls += 1
+            resp = super().complete(messages, model=model, temperature=temperature)
+            resp.text = '```json\n{"missing": \n```'
+            return resp
+
+    llm = Broken()
+    with pytest.raises(InvalidAgentOutput, match="malformed JSON"):
+        run_pipeline(TASK, CONFIGS["A"], llm)
+    assert llm.calls == 2
+
+
+def test_tool_timeout_is_bounded(monkeypatch):
+    from queue import Empty
+
+    class NeverFinishes:
+        def put(self, value):
+            pass
+
+        def get(self, *, timeout):
+            raise Empty
+
+    monkeypatch.setattr(orchestrator, "Queue", lambda maxsize: NeverFinishes())
+    with pytest.raises(TimeoutError, match="benchmark lookup timed out"):
+        orchestrator._timed_lookup("GSM8K", "accuracy")
+
+
+def test_gemini_rate_limit_is_retried_with_a_cap(monkeypatch):
+    import httpx
+    from openai import RateLimitError
+
+    client, stub = _client_with_stub()
+    response = httpx.Response(429, request=httpx.Request("POST", "https://example.test/"))
+    attempts = []
+
+    def rate_limited(**kwargs):
+        attempts.append(kwargs)
+        if len(attempts) < 3:
+            raise RateLimitError("rate limit", response=response, body=None)
+        return _Response([_Choice(_Message("valid answer"))], _Usage())
+
+    stub.create = rate_limited
+    monkeypatch.setattr("backoff._sync.time.sleep", lambda _: None)
+    assert client.complete([{"role": "user", "content": "hi"}], model="gemini-2.5-flash").text == "valid answer"
+    assert len(attempts) == 3

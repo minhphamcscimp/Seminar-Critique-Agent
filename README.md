@@ -64,6 +64,11 @@ python -m eval.runner --repeats 3
 
 Team workflow: see [CONTRIBUTING.md](CONTRIBUTING.md).
 
+D3 work-in-progress: see [Vân's implementation and evidence status](docs/van_d3_status.md).
+The runner now writes per-run JSONL traces alongside the legacy JSON traces. Use a
+new CSV path for D3 experiments: the new columns are not compatible with resuming
+the previously committed D2 `results.csv`.
+
 ## Third-party code and attribution
 
 `third_party/MAD/` is the code and data of *Encouraging Divergent Thinking in Large Language

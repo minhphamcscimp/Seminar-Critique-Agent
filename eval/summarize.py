@@ -40,7 +40,11 @@ def _read_results(path: Path) -> dict[str, list[dict[str, float | str]]]:
             parsed: dict[str, float | str] = {
                 "task_id": row["task_id"],
                 "run": row["run"],
+                "error": row.get("error") or "",
             }
+            if parsed["error"]:
+                rows_by_config[config].append(parsed)
+                continue  # retain failure for accounting, never include it in score means
             for column in METRICS:
                 try:
                     value = float(row[column])
@@ -66,7 +70,10 @@ def _complete_task_ids(
     task_runs: dict[str, dict[str, set[str]]] = defaultdict(lambda: defaultdict(set))
     for config, rows in rows_by_config.items():
         for row in rows:
-            task_runs[str(row["task_id"])][config].add(str(row["run"]))
+            if not row.get("error"):
+                task_runs[str(row["task_id"])][config].add(str(row["run"]))
+            else:
+                task_runs[str(row["task_id"])][config]  # keep failed tasks incomplete
 
     complete: set[str] = set()
     incomplete = set(task_runs)
@@ -98,6 +105,9 @@ def _render(
         "phrase-match proxies, not semantic correctness judgments.",
         "",
     ]
+    errors = sum(bool(row.get("error")) for rows in rows_by_config.values() for row in rows)
+    if errors:
+        lines.extend([f"Failed runs excluded from metrics: {errors}.", ""])
     if not complete_task_ids:
         lines.extend([
             "**No complete task available; metrics are withheld.** Each included task "

@@ -17,6 +17,7 @@ from .configs import CONFIGS
 from .llm import get_client
 from .orchestrator import run_pipeline
 from .schemas import Task
+from .trace_log import emit, log_session, make_run_id, write_jsonl
 
 
 def save_trace(result, out_dir: str, run_id: int = 0) -> str:
@@ -36,12 +37,20 @@ def main() -> None:
     p.add_argument("--out", default="traces")
     args = p.parse_args()
 
-    result = run_pipeline(Task.from_json(args.task), CONFIGS[args.config], get_client(args.llm))
+    task = Task.from_json(args.task)
+    with log_session(make_run_id(task.id, args.config, 0)) as log:
+        try:
+            result = run_pipeline(task, CONFIGS[args.config], get_client(args.llm))
+        except Exception as exc:
+            emit("error", error=type(exc).__name__, detail=str(exc))
+            write_jsonl(log, args.out, args.config)
+            raise
+        jsonl_path = write_jsonl(log, args.out, args.config)
     file = save_trace(result, args.out)
     tokens = result.usage.prompt_tokens + result.usage.completion_tokens
     print(
         f"config={result.config_name} steps={len(result.trace)} tokens={tokens} "
-        f"cost_usd={result.usage.cost_usd:.6f} latency={result.usage.latency_s:.3f}s trace={file}"
+        f"cost_usd={result.usage.cost_usd:.6f} latency={result.usage.latency_s:.3f}s trace={file} jsonl={jsonl_path}"
     )
 
 

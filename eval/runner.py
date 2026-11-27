@@ -22,12 +22,14 @@ from seminar_critique.llm import LLMClient, LLMResponse, OutOfQuotaError, get_cl
 from seminar_critique.orchestrator import run_pipeline
 from seminar_critique.run import save_trace
 from seminar_critique.schemas import Task
+from seminar_critique.trace_log import emit, log_session, make_run_id, write_jsonl
 
 from .scorer import score
 
 FIELDS = [
-    "task_id", "config", "run", "key_point_recall", "rubric_axis_coverage",
-    "prompt_tokens", "completion_tokens", "cost_usd", "latency_s",
+    "task_id", "config", "run", "run_id", "key_point_recall", "rubric_axis_coverage",
+    "prompt_tokens", "completion_tokens", "cost_usd", "latency_s", "error",
+    "retries", "reflection_iters", "reflection_changed", "trace_path",
 ]
 
 
@@ -143,17 +145,42 @@ def main() -> None:
                         )
                         call_started = time.perf_counter()
                         config = resolve_models(CONFIGS[name], args.llm)
-                        result = run_pipeline(task, config, llm)
-                        s = score(task, result)
-                        save_trace(result, args.traces, run)
+                        run_id = make_run_id(task.id, name, run)
+                        with log_session(run_id) as log:
+                            try:
+                                result = run_pipeline(task, config, llm)
+                                s = score(task, result)
+                                save_trace(result, args.traces, run)
+                                error = ""
+                            except OutOfQuotaError:
+                                emit("error", error="OutOfQuotaError", detail="Gemini quota exhausted")
+                                write_jsonl(log, args.traces, name)
+                                raise
+                            except KeyboardInterrupt:
+                                emit("error", error="KeyboardInterrupt", detail="run interrupted")
+                                write_jsonl(log, args.traces, name)
+                                raise
+                            except Exception as exc:
+                                emit("error", error=type(exc).__name__, detail=str(exc))
+                                result = None
+                                s = {"key_point_recall": "", "rubric_axis_coverage": ""}
+                                error = f"{type(exc).__name__}: {exc}"
+                            trace_path = write_jsonl(log, args.traces, name)
+                        retries = sum(event["event"] in ("agent_retry", "llm_retry") for event in log.events)
+                        reflection_steps = [step for step in result.trace if step.agent == "reflection"] if result else []
+                        changed = bool(result and reflection_steps and
+                                       result.answer != next(step.output for step in result.trace if step.agent == "synthesizer"))
                         writer.writerow({
-                            "task_id": task.id, "config": name, "run": run,
+                            "task_id": task.id, "config": name, "run": run, "run_id": run_id,
                             "key_point_recall": s["key_point_recall"],
                             "rubric_axis_coverage": s["rubric_axis_coverage"],
-                            "prompt_tokens": result.usage.prompt_tokens,
-                            "completion_tokens": result.usage.completion_tokens,
-                            "cost_usd": result.usage.cost_usd,
-                            "latency_s": round(result.usage.latency_s, 3),
+                            "prompt_tokens": result.usage.prompt_tokens if result else "",
+                            "completion_tokens": result.usage.completion_tokens if result else "",
+                            "cost_usd": result.usage.cost_usd if result else "",
+                            "latency_s": round(result.usage.latency_s, 3) if result else round(time.perf_counter() - call_started, 3),
+                            "error": error, "retries": retries,
+                            "reflection_iters": len(reflection_steps),
+                            "reflection_changed": changed, "trace_path": trace_path,
                         })
                         f.flush()
                         completed_runs.add(key)

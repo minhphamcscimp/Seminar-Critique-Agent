@@ -14,6 +14,7 @@ import backoff
 from openai import APIConnectionError, APIStatusError, APITimeoutError, OpenAI, RateLimitError
 
 from ..schemas import Usage
+from ..trace_log import emit
 from .pricing import estimate_cost_usd
 
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
@@ -78,6 +79,7 @@ class OutOfQuotaError(RuntimeError):
 def _log_retry(details: dict) -> None:
     error = details.get("exception")
     name = type(error).__name__ if error else "unknown error"
+    emit("llm_retry", error=name, tries=details["tries"], wait_s=details["wait"])
     print(
         f"[llm] call failed ({name}); retry {details['tries']} in {details['wait']:.1f}s",
         flush=True,

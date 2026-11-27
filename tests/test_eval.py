@@ -99,6 +99,14 @@ def test_runner_and_summary_with_fake_client(tmp_path: Path, monkeypatch: pytest
     assert {row["config"] for row in rows} == {"A", "B", "C"}
     assert {"key_point_recall", "rubric_axis_coverage"} <= set(rows[0])
     assert all(float(row["prompt_tokens"]) > 0 for row in rows)
+    for row in rows:
+        path = Path(row["trace_path"])
+        assert path.exists() and path.suffix == ".jsonl"
+        events = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+        assert all(event["run_id"] == row["run_id"] for event in events)
+        assert {"start", "agent", "result"} <= {event["event"] for event in events}
+        if row["config"] != "A":
+            assert {"retrieval", "tool"} <= {event["event"] for event in events}
 
     summary_path = tmp_path / "summary.md"
     monkeypatch.setattr(
@@ -235,6 +243,8 @@ def test_runner_keeps_only_fully_completed_tasks_when_interrupted(
     assert len(rows) == 3
     assert {row["task_id"] for row in rows} == {"01-complete"}
     assert {row["config"] for row in rows} == {"A", "B", "C"}
+    interrupted_trace = traces_dir / "A" / "02-interrupted-A-run0.jsonl"
+    assert json.loads(interrupted_trace.read_text(encoding="utf-8").splitlines()[-1])["error"] == "KeyboardInterrupt"
 
 
 def test_paced_client_enforces_minimum_between_request_starts(monkeypatch: pytest.MonkeyPatch):
@@ -402,3 +412,33 @@ def test_runner_preserves_completed_rows_when_quota_is_exhausted(
     error_output = capsys.readouterr().err
     assert "current run was not saved" in error_output
     assert "with --resume" in error_output
+
+
+def test_failed_agent_run_has_error_and_trace_but_no_success_score(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+):
+    tasks_dir = tmp_path / "tasks"
+    tasks_dir.mkdir()
+    (tasks_dir / "fail.json").write_text(json.dumps({
+        "id": "fail", "topic": "self-improvement-reflection", "input": "material",
+    }), encoding="utf-8")
+
+    def broken(task, config, llm):
+        raise ValueError("broken output")
+
+    monkeypatch.setattr(runner, "run_pipeline", broken)
+    results_path = tmp_path / "results.csv"
+    monkeypatch.setattr("sys.argv", [
+        "eval.runner", "--tasks", str(tasks_dir), "--configs", "A", "--repeats", "1",
+        "--out", str(results_path), "--traces", str(tmp_path / "traces"),
+    ])
+    runner.main()
+    with results_path.open(newline="", encoding="utf-8") as handle:
+        row = next(csv.DictReader(handle))
+    assert row["error"] == "ValueError: broken output"
+    assert row["key_point_recall"] == ""
+    trace = [json.loads(line) for line in Path(row["trace_path"]).read_text(encoding="utf-8").splitlines()]
+    assert trace[-1]["event"] == "error"
+    assert trace[-1]["run_id"] == row["run_id"]
+    parsed = summarize._read_results(results_path)
+    assert "Failed runs excluded from metrics: 1" in summarize._render(parsed, 1)

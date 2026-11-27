@@ -12,6 +12,8 @@ from __future__ import annotations
 
 import re
 import time
+from queue import Empty, Queue
+from threading import Thread
 
 from .agents import critique, reflect, summarize, synthesize
 from .agents.base import call_agent
@@ -21,6 +23,7 @@ from .retrieval import retrieve
 from .schemas import Chunk, Config, Result, Task, TraceStep, Usage
 from .security import sanitize_untrusted
 from .tools import call_tool
+from .trace_log import emit
 
 BASELINE_SYSTEM = "Write a structured critique of the following seminar material."
 
@@ -33,6 +36,29 @@ PAPER_BENCHMARKS: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 # A benchmark may have several metrics; the tool needs the exact one.
 METRIC_ORDER = ("accuracy", "exact_match", "f1", "success_rate", "score")
+TOOL_TIMEOUT_S = 10.0
+
+
+def _timed_lookup(name: str, metric: str) -> dict:
+    """Bound a read-only lookup without blocking process shutdown on a stuck tool."""
+    result: Queue[tuple[bool, object]] = Queue(maxsize=1)
+
+    def invoke() -> None:
+        try:
+            result.put((True, call_tool("lookup_benchmark", name=name, metric=metric)))
+        except Exception as exc:
+            result.put((False, exc))
+
+    Thread(target=invoke, daemon=True).start()
+    try:
+        ok, value = result.get(timeout=TOOL_TIMEOUT_S)
+    except Empty as exc:
+        raise TimeoutError(f"benchmark lookup timed out after {TOOL_TIMEOUT_S}s: {name}/{metric}") from exc
+    if not ok:
+        raise value
+    emit("tool", tool="lookup_benchmark", args={"name": name, "metric": metric},
+         result=value["result"])
+    return value
 
 
 def _benchmark_names(task: Task) -> list[str]:
@@ -52,10 +78,10 @@ def _lookup_benchmarks(task: Task) -> list[dict]:
     found: list[dict] = []
     for name in _benchmark_names(task):
         for metric in METRIC_ORDER:
-            out = call_tool("lookup_benchmark", name=name, metric=metric)
+            out = _timed_lookup(name, metric)
             if out["result"].get("found"):
                 found.append(out)
-    return found or [call_tool("lookup_benchmark", name=task.topic, metric="accuracy")]
+    return found or [_timed_lookup(task.topic, "accuracy")]
 
 
 def _normalize(text: str) -> str:
@@ -83,6 +109,7 @@ def run_pipeline(task: Task, cfg: Config, llm: LLMClient | None = None) -> Resul
 
     # Entry point 1 of the threat model: the seminar material is untrusted.
     material = sanitize_untrusted(task.input, "task_input")
+    emit("start", task_id=task.id, config=cfg.name, topic=task.topic, material=task.input)
 
     if not cfg.use_pipeline:
         answer, step = call_agent(llm, cfg, "baseline", BASELINE_SYSTEM, material)
@@ -91,6 +118,9 @@ def run_pipeline(task: Task, cfg: Config, llm: LLMClient | None = None) -> Resul
         chunks: list[Chunk] = []
         if cfg.use_retrieval:
             chunks = retrieve(task.input[:200], task.topic)
+            emit("retrieval", query=task.input[:200], topic=task.topic,
+                 chunks=[{"id": c.id, "paper": c.paper, "section": c.section,
+                          "score": c.score, "text": c.text} for c in chunks])
 
         summary, step = summarize(material, chunks, llm, cfg)
         trace.append(step)
@@ -119,10 +149,15 @@ def run_pipeline(task: Task, cfg: Config, llm: LLMClient | None = None) -> Resul
                 # model may have answered only with the NO CHANGE marker) and
                 # stop instead of paying for another identical call.
                 answer = previous
+                emit("reflection_decision", changed=False, reason="unchanged")
                 break
+            emit("reflection_decision", changed=True)
 
     total = Usage()
     for s in trace:
         total = total + s.usage
     total.latency_s = time.perf_counter() - started  # wall-clock time of the whole run
+    emit("result", answer=answer, usage={"prompt_tokens": total.prompt_tokens,
+         "completion_tokens": total.completion_tokens, "cost_usd": total.cost_usd,
+         "latency_s": total.latency_s})
     return Result(task.id, cfg.name, answer, trace, total)
