@@ -109,3 +109,12 @@ def test_unwritable_audit_log_fails_the_call(monkeypatch, tmp_path):
     monkeypatch.setenv(audit.AUDIT_PATH_ENV, str(folder))  # a directory cannot be appended to
     with pytest.raises(OSError):
         call_tool("lookup_benchmark", name="GSM8K", metric="accuracy")
+
+
+def test_eval_runner_rows_and_audit_lines_share_the_run_id(_audit_log_in_tmp, tmp_path):
+    from eval.runner import run_one
+
+    task = Task(id="audit-runner", topic="tool-use-mcp", input="Yao et al. (2023) propose ReAct.")
+    row = run_one(task, "B", 0, FakeLLM(), "fake", str(tmp_path / "traces"))
+    lines = read_audit(_audit_log_in_tmp)
+    assert lines and {line["run_id"] for line in lines} == {row["run_id"]}

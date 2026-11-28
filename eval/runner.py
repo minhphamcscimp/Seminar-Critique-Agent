@@ -27,6 +27,7 @@ from seminar_critique.configs import CONFIGS, resolve_models
 from seminar_critique.llm import LLMClient, LLMResponse, OutOfQuotaError, get_client
 from seminar_critique.orchestrator import run_pipeline
 from seminar_critique.schemas import Config, Result, Task
+from seminar_critique.security.audit import audit_run
 
 from .scorer import PASS_THRESHOLD, score, verdict
 
@@ -155,7 +156,8 @@ def run_one(task: Task, name: str, run: int, llm: LLMClient, llm_name: str,
     error = ""
     old_stdout, sys.stdout = sys.stdout, counter
     try:
-        result = run_pipeline(task, config, llm)
+        with audit_run(run_id):  # tool audit lines carry the same run_id as this row
+            result = run_pipeline(task, config, llm)
     except OutOfQuotaError:
         raise
     except Exception as exc:  # noqa: BLE001 - every failure must be recorded, not hidden

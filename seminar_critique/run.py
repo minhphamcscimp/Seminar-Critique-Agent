@@ -17,6 +17,7 @@ from .configs import CONFIGS
 from .llm import get_client
 from .orchestrator import run_pipeline
 from .schemas import Task
+from .security.audit import audit_run
 from .security.input_check import InvalidMaterial, check_material
 
 
@@ -37,12 +38,19 @@ def main() -> None:
     p.add_argument("--out", default="traces")
     args = p.parse_args()
 
-    task = Task.from_json(args.task)
+    # Careless input (wrong file, empty text, PDF bytes) stops here, before any LLM call.
     try:
-        check_material(task.input)  # careless input (empty, PDF bytes) stops before any LLM call
+        task = Task.from_json(args.task)
+        check_material(task.input)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        p.error(f"{args.task}: not a readable task JSON file ({type(exc).__name__})")
+    except TypeError as exc:
+        p.error(f"{args.task}: task JSON needs id, topic and input ({exc})")
     except InvalidMaterial as exc:
         p.error(f"{args.task}: {exc}")
-    result = run_pipeline(task, CONFIGS[args.config], get_client(args.llm))
+    # Same run_id format as eval/runner.py, so audit lines point at this trace.
+    with audit_run(f"{task.id}-{args.config}-r0"):
+        result = run_pipeline(task, CONFIGS[args.config], get_client(args.llm))
     file = save_trace(result, args.out)
     tokens = result.usage.prompt_tokens + result.usage.completion_tokens
     print(
