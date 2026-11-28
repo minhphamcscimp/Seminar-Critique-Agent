@@ -29,9 +29,9 @@ Experiment configurations (see `seminar_critique/configs.py`):
 | Skeleton, interfaces, contract tests | done (contract tests pass, FakeLLM kept for offline tests) |
 | Real LLM client | real: GeminiClient with temperature, per-call model, token usage, latency and cost from price env vars (seminar_critique/llm/) |
 | Retrieval (GraphRAG) | real: BM25 + graph expansion, 10 papers, 2 topics (retrieval/stats.json) |
-| Tools and permissions | real: read-only benchmark lookup, 13 sourced records, permission allowlist; returns evidence for 4 of 9 eval tasks, the other 5 have no matching record ([details](seminar_critique/tools/README.md)) |
+| Tools and permissions | real: read-only benchmark lookup, 31 sourced records from 8 papers, permission allowlist, one audit line per tool call; evidence for 23 of 25 eval tasks (the 2 Kamoi survey tasks have no own table) ([details](seminar_critique/tools/README.md)) |
 | Eval set and runner | real: runner and scorer, 9 tasks x 3 configs x 3 repeats = 81 runs (eval/results/results.csv, summary.md); scores are phrase-match proxies |
-| Threat model | documented; input sanitization and prompt boundaries implemented, live injection evaluation pending ([details](seminar_critique/security/threat_model.md)) |
+| Threat model and attacks | documented; sanitization, prompt boundaries, input check implemented; 16 attack cases with harness (`python -m seminar_critique.security.run_attacks`), offline run done, live Gemini run on `d3-freeze` pending ([details](seminar_critique/security/threat_model.md)) |
 
 Update this table as parts become real. Be exact: "stub" means it does not do the real work yet.
 
@@ -46,7 +46,7 @@ seminar_critique/
   configs.py        configurations A, B, C
   retrieval/        GraphRAG retrieval
   tools/            tool registry with allowlist, benchmark lookup
-  security/         threat model and untrusted-content handling
+  security/         threat model, untrusted-content handling, audit log, attack cases + harness
   run.py            run one task, save the trace
 eval/               tasks, runner, scorer, results
 tests/              contract tests

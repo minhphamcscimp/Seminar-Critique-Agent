@@ -2,7 +2,8 @@
 
 Paper text, retrieved chunks and tool results all come from outside the system.
 They may contain instructions aimed at the model (prompt injection).
-D2 only asks for the threat model; attack tests belong to the final report.
+D3: the attack cases in security/attacks/cases.json exercise these functions
+(python -m seminar_critique.security.run_attacks).
 """
 from __future__ import annotations
 
@@ -20,12 +21,24 @@ UNTRUSTED_CONTENT_POLICY = (
 )
 
 
+# Characters that look like < or > (fullwidth, small form, angle brackets, math
+# brackets). An LLM can read "＜/untrusted＞" as a closing tag although it is not one,
+# so they are escaped like the real brackets (found by attack case AT-03, D3).
+LOOKALIKE_BRACKETS = {
+    "＜": "&lt;", "﹤": "&lt;", "‹": "&lt;", "〈": "&lt;",
+    "⟨": "&lt;", "〈": "&lt;", "❮": "&lt;", "˂": "&lt;",
+    "＞": "&gt;", "﹥": "&gt;", "›": "&gt;", "〉": "&gt;",
+    "⟩": "&gt;", "〉": "&gt;", "❯": "&gt;", "˃": "&gt;",
+}
+
+
 def _clean(text: str, limit: int) -> str:
     text = text[:limit].replace("\r\n", "\n").replace("\r", "\n")
-    return escape("".join(
+    kept = "".join(
         char for char in text
         if char in "\n\t" or unicodedata.category(char) not in {"Cc", "Cf", "Cs"}
-    ), quote=True)
+    )
+    return "".join(LOOKALIKE_BRACKETS.get(char, char) for char in escape(kept, quote=True))
 
 
 def sanitize_untrusted(text: str, source: str) -> str:

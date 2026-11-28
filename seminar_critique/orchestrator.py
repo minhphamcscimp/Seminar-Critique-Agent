@@ -27,12 +27,24 @@ BASELINE_SYSTEM = "Write a structured critique of the following seminar material
 # The benchmark file is indexed by benchmark name (GSM8K, HotpotQA, ...), not by
 # task topic. Pick the benchmarks the paper under critique actually reports, so the
 # lookup tool can return real records. Names must exist in data/benchmarks.json.
+# D3 (R1, Tin): one entry per corpus paper that reports its own results table.
+# Kamoi et al. 2024 is a survey with no benchmark table of its own, so it has no entry.
 PAPER_BENCHMARKS: tuple[tuple[str, tuple[str, ...]], ...] = (
     (r"\bHuang et al\b", ("HotpotQA", "GSM8K")),
     (r"\bReAct\b", ("HotpotQA", "FEVER", "ALFWorld", "WebShop")),
+    (r"\bGou et al\b", ("AmbigNQ", "TriviaQA", "HotpotQA", "GSM8K", "SVAMP", "TabMWP")),
+    (r"\bShinn et al\b", ("HumanEval", "MBPP", "LeetcodeHardGym")),
+    (r"\bMadaan et al\b", ("Sentiment Reversal", "Code Optimization", "Constrained Generation")),
+    (r"\bChen et al\b", ("Spider", "TransCoder")),
+    (r"\bSchick et al\b", ("LAMA T-REx", "ASDiv", "Natural Questions", "Dateset")),
+    (r"\bPatil et al\b", ("APIBench-TorchHub", "APIBench-HuggingFace", "APIBench-TensorHub")),
+    (r"\bQin et al\b", ("ToolBench",)),
 )
 # A benchmark may have several metrics; the tool needs the exact one.
-METRIC_ORDER = ("accuracy", "exact_match", "f1", "success_rate", "score")
+METRIC_ORDER = (
+    "accuracy", "exact_match", "f1", "success_rate", "score",
+    "pass_at_1", "pass_rate", "win_rate", "hallucination",
+)
 
 
 def _benchmark_names(task: Task) -> list[str]:

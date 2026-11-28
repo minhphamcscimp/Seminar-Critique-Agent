@@ -19,16 +19,23 @@ def test_lookup_returns_published_value_and_provenance():
     assert "2305.11738v4" in out["result"]["source"]
 
 
-def test_dataset_has_10_to_20_unique_sourced_records():
+CORPUS_PAPERS = {"huang2024", "shinn2023", "madaan2023", "gou2024", "kamoi2024", "chen2024",
+                 "yao2023", "schick2023", "patil2023", "qin2024"}
+
+
+def test_dataset_has_unique_sourced_records_from_corpus_papers():
     records = json.loads(BENCHMARKS_PATH.read_text(encoding="utf-8"))
-    assert 10 <= len(records) <= 20
+    assert 25 <= len(records) <= 40
     pairs = [(row["benchmark"].casefold(), row["metric"].casefold()) for row in records]
     assert len(set(pairs)) == len(pairs)
     for row in records:
-        assert set(row) == {"benchmark", "metric", "method", "value", "source"}
+        assert set(row) == {"paper", "benchmark", "metric", "method", "value", "source"}
+        assert row["paper"] in CORPUS_PAPERS
         assert "Table " in row["source"] and "https://arxiv.org/" in row["source"]
         result = lookup_benchmark(row["benchmark"], row["metric"])
         assert result == {**row, "found": True}
+    # Every paper with its own results table has records; the survey (Kamoi) has none.
+    assert {row["paper"] for row in records} == CORPUS_PAPERS - {"huang2024", "kamoi2024"}
 
 
 @pytest.mark.parametrize("name,metric", [

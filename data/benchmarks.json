@@ -1,5 +1,6 @@
 [
   {
+    "paper": "gou2024",
     "benchmark": "AmbigNQ",
     "metric": "exact_match",
     "method": "CRITIC (gpt-3.5-turbo, non-oracle)",
@@ -7,6 +8,7 @@
     "source": "Gou et al. (2024), CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing, Table 1, ChatGPT CRITIC row, EM (%); 500 validation examples. https://arxiv.org/html/2305.11738v4#S4.T1"
   },
   {
+    "paper": "gou2024",
     "benchmark": "AmbigNQ",
     "metric": "f1",
     "method": "CRITIC (gpt-3.5-turbo, non-oracle)",
@@ -14,6 +16,7 @@
     "source": "Gou et al. (2024), CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing, Table 1, ChatGPT CRITIC row, F1 (%); 500 validation examples. https://arxiv.org/html/2305.11738v4#S4.T1"
   },
   {
+    "paper": "gou2024",
     "benchmark": "TriviaQA",
     "metric": "exact_match",
     "method": "CRITIC (gpt-3.5-turbo, non-oracle)",
@@ -21,6 +24,7 @@
     "source": "Gou et al. (2024), CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing, Table 1, ChatGPT CRITIC row, EM (%); 500 validation examples. https://arxiv.org/html/2305.11738v4#S4.T1"
   },
   {
+    "paper": "gou2024",
     "benchmark": "TriviaQA",
     "metric": "f1",
     "method": "CRITIC (gpt-3.5-turbo, non-oracle)",
@@ -28,6 +32,7 @@
     "source": "Gou et al. (2024), CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing, Table 1, ChatGPT CRITIC row, F1 (%); 500 validation examples. https://arxiv.org/html/2305.11738v4#S4.T1"
   },
   {
+    "paper": "gou2024",
     "benchmark": "HotpotQA",
     "metric": "exact_match",
     "method": "CRITIC (gpt-3.5-turbo, non-oracle)",
@@ -35,6 +40,7 @@
     "source": "Gou et al. (2024), CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing, Table 1, ChatGPT CRITIC row, EM (%); 500 validation examples. https://arxiv.org/html/2305.11738v4#S4.T1"
   },
   {
+    "paper": "gou2024",
     "benchmark": "HotpotQA",
     "metric": "f1",
     "method": "CRITIC (gpt-3.5-turbo, non-oracle)",
@@ -42,6 +48,7 @@
     "source": "Gou et al. (2024), CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing, Table 1, ChatGPT CRITIC row, F1 (%); 500 validation examples. https://arxiv.org/html/2305.11738v4#S4.T1"
   },
   {
+    "paper": "gou2024",
     "benchmark": "GSM8K",
     "metric": "accuracy",
     "method": "CRITIC (gpt-3.5-turbo, non-oracle)",
@@ -49,6 +56,7 @@
     "source": "Gou et al. (2024), CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing, Table 2, ChatGPT CRITIC row, rounded numeric exact match (%), official test split. https://arxiv.org/html/2305.11738v4#S4.T2"
   },
   {
+    "paper": "gou2024",
     "benchmark": "SVAMP",
     "metric": "accuracy",
     "method": "CRITIC (gpt-3.5-turbo, non-oracle)",
@@ -56,6 +64,7 @@
     "source": "Gou et al. (2024), CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing, Table 2, ChatGPT CRITIC row, rounded numeric exact match (%), official test split. https://arxiv.org/html/2305.11738v4#S4.T2"
   },
   {
+    "paper": "gou2024",
     "benchmark": "TabMWP",
     "metric": "accuracy",
     "method": "CRITIC (gpt-3.5-turbo, non-oracle)",
@@ -63,6 +72,7 @@
     "source": "Gou et al. (2024), CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing, Table 2, ChatGPT CRITIC row, rounded numeric exact match (%), official test split. https://arxiv.org/html/2305.11738v4#S4.T2"
   },
   {
+    "paper": "yao2023",
     "benchmark": "FEVER",
     "metric": "accuracy",
     "method": "ReAct (PaLM-540B)",
@@ -70,6 +80,7 @@
     "source": "Yao et al. (2023), ReAct: Synergizing Reasoning and Acting in Language Models, Table 1, ReAct row, Acc (%). https://arxiv.org/html/2210.03629v3#S3.T1"
   },
   {
+    "paper": "yao2023",
     "benchmark": "ALFWorld",
     "metric": "success_rate",
     "method": "ReAct (PaLM-540B, average over 6 prompts)",
@@ -77,6 +88,7 @@
     "source": "Yao et al. (2023), ReAct: Synergizing Reasoning and Acting in Language Models, Table 3, ReAct (avg) row, All column, success rate (%), 134 unseen games; not best-of-6. https://arxiv.org/html/2210.03629v3#S4.T3"
   },
   {
+    "paper": "yao2023",
     "benchmark": "WebShop",
     "metric": "score",
     "method": "ReAct (PaLM-540B)",
@@ -84,10 +96,155 @@
     "source": "Yao et al. (2023), ReAct: Synergizing Reasoning and Acting in Language Models, Table 4, ReAct row, Score (0–100), 500 test instructions. https://arxiv.org/html/2210.03629v3#S4.T4"
   },
   {
+    "paper": "yao2023",
     "benchmark": "WebShop",
     "metric": "success_rate",
     "method": "ReAct (PaLM-540B)",
     "value": 40.0,
     "source": "Yao et al. (2023), ReAct: Synergizing Reasoning and Acting in Language Models, Table 4, ReAct row, SR (%), 500 test instructions. https://arxiv.org/html/2210.03629v3#S4.T4"
+  },
+  {
+    "paper": "shinn2023",
+    "benchmark": "HumanEval",
+    "metric": "pass_at_1",
+    "method": "Reflexion (GPT-4)",
+    "value": 91.0,
+    "source": "Shinn et al. (2023), Reflexion: Language Agents with Verbal Reinforcement Learning, Table 1, HumanEval (PY) row, Reflexion Pass@1 column, pass@1 accuracy (%), Python, zero-shot code generation; base model GPT-4 is stated in the abstract and Sec 4.3, not in the table; GPT-4 baseline in the same row is 80.1. https://arxiv.org/html/2303.11366v4#S4.T1"
+  },
+  {
+    "paper": "shinn2023",
+    "benchmark": "MBPP",
+    "metric": "pass_at_1",
+    "method": "Reflexion (GPT-4)",
+    "value": 77.1,
+    "source": "Shinn et al. (2023), Reflexion: Language Agents with Verbal Reinforcement Learning, Table 1, MBPP (PY) row, Reflexion Pass@1 column, pass@1 accuracy (%), Python; base model GPT-4 stated in Sec 4.3, not in the table; below the GPT-4 baseline of 80.1, the one benchmark where Reflexion does not set SOTA (Sec 4.3). https://arxiv.org/html/2303.11366v4#S4.T1"
+  },
+  {
+    "paper": "shinn2023",
+    "benchmark": "LeetcodeHardGym",
+    "metric": "pass_at_1",
+    "method": "Reflexion (GPT-4)",
+    "value": 15.0,
+    "source": "Shinn et al. (2023), Reflexion: Language Agents with Verbal Reinforcement Learning, Table 1, Leetcode Hard (PY) row, Reflexion Pass@1 column, pass@1 accuracy (%), Python; 40 Leetcode hard questions released after Oct 8, 2022 (Sec 4.3); GPT-4 baseline 7.5. https://arxiv.org/html/2303.11366v4#S4.T1"
+  },
+  {
+    "paper": "madaan2023",
+    "benchmark": "Sentiment Reversal",
+    "metric": "win_rate",
+    "method": "Self-Refine (GPT-4)",
+    "value": 36.2,
+    "source": "Madaan et al. (2023), Self-Refine: Iterative Refinement with Self-Feedback, Table 1, Sentiment Reversal row, GPT-4 group, +Self-Refine column; GPT-4-pref: % of pairwise comparisons in which a GPT-4 judge preferred the Self-Refine output over the base GPT-4 output, ties counted separately (base 3.8%); 1000 review passages (Table 4). https://arxiv.org/html/2303.17651v2#S3.T1"
+  },
+  {
+    "paper": "madaan2023",
+    "benchmark": "Code Optimization",
+    "metric": "success_rate",
+    "method": "Self-Refine (GPT-4)",
+    "value": 36.0,
+    "source": "Madaan et al. (2023), Self-Refine: Iterative Refinement with Self-Feedback, Table 1, Code Optimization row, GPT-4 group, +Self-Refine column; % programs optimized (%Opt), not a speedup factor; base GPT-4 27.3%; PIE dataset, 1000 programs (Table 4); same value in Table 8. https://arxiv.org/html/2303.17651v2#S3.T1"
+  },
+  {
+    "paper": "madaan2023",
+    "benchmark": "Constrained Generation",
+    "metric": "score",
+    "method": "Self-Refine (GPT-4)",
+    "value": 45.0,
+    "source": "Madaan et al. (2023), Self-Refine: Iterative Refinement with Self-Feedback, Table 1, Constrained Generation row, GPT-4 group, +Self-Refine column; concept coverage % (Sec 3.2, Table 13 caption); base GPT-4 15.0%; CommonGen-Hard, 200 samples (Table 4). https://arxiv.org/html/2303.17651v2#S3.T1"
+  },
+  {
+    "paper": "chen2024",
+    "benchmark": "Spider",
+    "metric": "accuracy",
+    "method": "Self-Debugging (Codex / code-davinci-002, + code explanation)",
+    "value": 84.1,
+    "source": "Chen et al. (2024), Teaching Large Language Models to Self-Debug, Table 1(a), Self-Debugging (this work) block, + Expl. row under Codex, Spider (Dev) column; same value in Table 2(a). Accuracy (%) on the Spider development set; the paper does not say which Spider accuracy variant; no unit tests, at most 10 debugging turns. https://arxiv.org/html/2304.05128v2#S5.T1"
+  },
+  {
+    "paper": "chen2024",
+    "benchmark": "TransCoder",
+    "metric": "pass_at_1",
+    "method": "Self-Debugging (Codex / code-davinci-002, unit-test feedback + code explanation)",
+    "value": 92.5,
+    "source": "Chen et al. (2024), Teaching Large Language Models to Self-Debug, Table 2(b), Codex column, + Expl. row (unit tests plus explanation, UT + Expl. in Table 6), baseline 80.4; Table 6 header TransCoder (pass@1), the main text calls it accuracy. % of the 560 C++-to-Python test problems solved, 10 unit tests each. https://arxiv.org/html/2304.05128v2#S5.T2"
+  },
+  {
+    "paper": "schick2023",
+    "benchmark": "LAMA T-REx",
+    "metric": "accuracy",
+    "method": "Toolformer (GPT-J 6.7B)",
+    "value": 53.5,
+    "source": "Schick et al. (2023), Toolformer: Language Models Can Teach Themselves to Use Tools, Table 3, Toolformer row, T-REx column. Lenient criterion, not exact match: % of examples where the correct word is within the first five predicted words; zero-shot, LAMA T-REx subset filtered to final-token masks. https://arxiv.org/html/2302.04761v1#S4.T3"
+  },
+  {
+    "paper": "schick2023",
+    "benchmark": "ASDiv",
+    "metric": "accuracy",
+    "method": "Toolformer (GPT-J 6.7B)",
+    "value": 40.4,
+    "source": "Schick et al. (2023), Toolformer: Language Models Can Teach Themselves to Use Tools, Table 4, Toolformer row, ASDiv column. Lenient criterion: only the first predicted number (or the first number after =) is checked; zero-shot; split not stated. https://arxiv.org/html/2302.04761v1#S4.T4"
+  },
+  {
+    "paper": "schick2023",
+    "benchmark": "Natural Questions",
+    "metric": "accuracy",
+    "method": "Toolformer (GPT-J 6.7B)",
+    "value": 17.7,
+    "source": "Schick et al. (2023), Toolformer: Language Models Can Teach Themselves to Use Tools, Table 5, Toolformer row, NQ column. Lenient criterion, not exact match: % of examples whose first 20 predicted words contain the answer; zero-shot; QA tool disabled, mostly Wikipedia search. https://arxiv.org/html/2302.04761v1#S4.T5"
+  },
+  {
+    "paper": "schick2023",
+    "benchmark": "Dateset",
+    "metric": "accuracy",
+    "method": "Toolformer (GPT-J 6.7B)",
+    "value": 27.3,
+    "source": "Schick et al. (2023), Toolformer: Language Models Can Teach Themselves to Use Tools, Table 7, Toolformer row, Dateset column. Lenient LAMA criterion (answer within the first five predicted words); zero-shot; the paper's own template dataset (Appendix D, 9,400 queries). https://arxiv.org/html/2302.04761v1#S4.T7"
+  },
+  {
+    "paper": "patil2023",
+    "benchmark": "APIBench-TorchHub",
+    "metric": "accuracy",
+    "method": "Gorilla (LLaMA-7B fine-tuned on APIBench, 0-shot = no retriever)",
+    "value": 59.13,
+    "source": "Patil et al. (2023), Gorilla: Large Language Model Connected with Massive APIs, Table 1, Gorilla (0-shot) row, TorchHub overall column, overall accuracy (%) = AST sub-tree-matching accuracy of the generated API call; no retriever; held-out test split (80/20, App. 8.2); same value in Table 2. arXiv v1. https://arxiv.org/html/2305.15334v1#S4.T1"
+  },
+  {
+    "paper": "patil2023",
+    "benchmark": "APIBench-HuggingFace",
+    "metric": "accuracy",
+    "method": "Gorilla (LLaMA-7B fine-tuned on APIBench, 0-shot = no retriever)",
+    "value": 71.68,
+    "source": "Patil et al. (2023), Gorilla: Large Language Model Connected with Massive APIs, Table 1, Gorilla (0-shot) row, HuggingFace overall column, AST sub-tree-matching accuracy (%); no retriever; held-out split (90/10, App. 8.2). Sec 4.1: on HuggingFace the baselines were only checked for the correct domain name, so comparisons on this column are not like-for-like. arXiv v1. https://arxiv.org/html/2305.15334v1#S4.T1"
+  },
+  {
+    "paper": "patil2023",
+    "benchmark": "APIBench-TensorHub",
+    "metric": "accuracy",
+    "method": "Gorilla (LLaMA-7B fine-tuned on APIBench, 0-shot = no retriever)",
+    "value": 83.79,
+    "source": "Patil et al. (2023), Gorilla: Large Language Model Connected with Massive APIs, Table 1, Gorilla (0-shot) row, TensorFlow Hub overall column, AST sub-tree-matching accuracy (%); no retriever; held-out split (80/20, App. 8.2); same value in Table 2. arXiv v1. https://arxiv.org/html/2305.15334v1#S4.T1"
+  },
+  {
+    "paper": "patil2023",
+    "benchmark": "APIBench-TorchHub",
+    "metric": "hallucination",
+    "method": "Gorilla (LLaMA-7B fine-tuned on APIBench, 0-shot = no retriever)",
+    "value": 6.98,
+    "source": "Patil et al. (2023), Gorilla: Large Language Model Connected with Massive APIs, Table 1, Gorilla (0-shot) row, TorchHub hallu column (lower is better): % of generated calls that match no API in the database (imagined tool), distinct from err (wrong use of a real API); same value in Table 2. arXiv v1. https://arxiv.org/html/2305.15334v1#S4.T1"
+  },
+  {
+    "paper": "qin2024",
+    "benchmark": "ToolBench",
+    "metric": "pass_rate",
+    "method": "ToolLLaMA-DFSDT (LLaMA-2 7B fine-tuned on ToolBench, oracle APIs)",
+    "value": 66.7,
+    "source": "Qin et al. (2024), ToolLLM: Facilitating Large Language Models to Master 16000+ Real-world APIs, Table 4 (main ToolBench results), ToolLLaMA / DFSDT row, Average Pass column: pass rate (%) from the ChatGPT-based ToolEval, averaged over I1-Inst., I1-Tool, I1-Cat., I2-Inst., I2-Cat., I3-Inst.; ground-truth (oracle) APIs. arXiv v2 (v1 reported 61.0 under an earlier setup). https://arxiv.org/html/2307.16789v2#S3.T4"
+  },
+  {
+    "paper": "qin2024",
+    "benchmark": "ToolBench",
+    "metric": "win_rate",
+    "method": "ToolLLaMA-DFSDT (LLaMA-2 7B fine-tuned on ToolBench, oracle APIs)",
+    "value": 60.0,
+    "source": "Qin et al. (2024), ToolLLM: Facilitating Large Language Models to Master 16000+ Real-world APIs, Table 4 (main ToolBench results), ToolLLaMA / DFSDT row, Average Win column: win rate (%) against ChatGPT-ReACT judged by ToolEval (ChatGPT), ties split half/half (App. A.5); same six groups; oracle APIs. arXiv v2 (v1 reported 68.3). https://arxiv.org/html/2307.16789v2#S3.T4"
   }
 ]
