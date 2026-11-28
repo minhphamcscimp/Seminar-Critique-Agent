@@ -17,6 +17,7 @@ from .configs import CONFIGS
 from .llm import get_client
 from .orchestrator import run_pipeline
 from .schemas import Task
+from .security.input_check import InvalidMaterial, check_material
 
 
 def save_trace(result, out_dir: str, run_id: int = 0) -> str:
@@ -36,7 +37,12 @@ def main() -> None:
     p.add_argument("--out", default="traces")
     args = p.parse_args()
 
-    result = run_pipeline(Task.from_json(args.task), CONFIGS[args.config], get_client(args.llm))
+    task = Task.from_json(args.task)
+    try:
+        check_material(task.input)  # careless input (empty, PDF bytes) stops before any LLM call
+    except InvalidMaterial as exc:
+        p.error(f"{args.task}: {exc}")
+    result = run_pipeline(task, CONFIGS[args.config], get_client(args.llm))
     file = save_trace(result, args.out)
     tokens = result.usage.prompt_tokens + result.usage.completion_tokens
     print(
